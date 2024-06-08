@@ -1,0 +1,17 @@
+[qsign]
+# 签名服务器地址
+# 默认的签名地址延迟有点高
+# 如果需求低延迟，请使用香港或其它区域的服务器代理转发即可...
+# kritor.support提供了全球节点，其中包括香港节点，可能您的dns不会为您解析到香港节点，请手动修改hosts
+server = "https://kritor.support/android/v9.0.20"
+
+[developer]
+
+[sql]
+# 只支持PgSql
+# 是否启用数据库
+# 启用数据库之后，可以使用获取历史消息功能
+enable = true
+# postgres://用户名:密码@远程地址/
+address = "postgres://postgres:postgres@localhost/"
+

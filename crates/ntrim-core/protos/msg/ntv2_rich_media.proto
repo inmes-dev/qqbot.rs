@@ -1,0 +1,97 @@
+syntax = "proto2";
+
+package msg;
+
+message MsgInfo {
+  repeated MsgInfoBody msg_info_body = 1;
+  optional ExtBizInfo ext_info = 2;
+}
+
+message ExtBizInfo {
+  optional PicExtBizInfo pic = 1;
+  optional VideoExtBizInfo video = 2;
+  optional PttExtBizInfo ptt = 3;
+  optional uint32 busiType = 10;
+}
+
+message PttExtBizInfo {
+  required uint64 srcUin = 1;
+  required uint32 pttScene = 2;
+  required uint32 pttType = 3;
+  required uint32 changeVoice = 4;
+  optional bytes waveform = 5;
+  optional uint32 autoConvertText = 6;
+  optional bytes bytesReserve = 11;
+  optional bytes bytesPbReserve = 12;
+  optional bytes bytesGeneralFlags = 13;
+}
+
+message VideoExtBizInfo {
+  optional uint32 fromScene = 1;
+  optional uint32 toScene = 2;
+  optional bytes bytesPbReserve = 3;
+}
+
+message PicExtBizInfo {
+  optional uint32 bizType = 1;
+  optional string textSummary = 2;
+  optional bytes bytesPbReserveC2c = 11;
+  optional bytes bytesPbReserveTroop = 12;
+  optional uint32 fromScene = 1001;
+  optional uint32 toScene = 1002;
+  optional uint32 oldFileId = 1003;
+}
+
+message MsgInfoBody {
+  required IndexNode index = 1;
+  optional PictureInfo picture = 2;
+  optional VideoInfo video = 3;
+  optional AudioInfo audio = 4;
+  optional bool file_exist = 5;
+  optional bytes hash_sum = 6;
+}
+
+message VideoInfo {}
+
+message AudioInfo {}
+
+message PictureInfo {
+  required string url_path = 1;
+  optional PicUrlExtInfo ext = 2;
+  optional string domain = 3;
+}
+
+message PicUrlExtInfo {
+  optional string original_parameter = 1;
+  optional string big_parameter = 2;
+  optional string thumb_parameter = 3;
+}
+
+message IndexNode {
+  required FileInfo file_info = 1;
+  required string file_uuid = 2;
+  optional uint32 store_id = 3;
+  required uint64 upload_time = 4;
+  optional uint64 ttl = 5;
+  optional uint32 sub_type = 6;
+  optional uint32 store_app_id = 7;
+}
+
+message FileInfo {
+  required uint64 file_size = 1;
+  required string md5 = 2;
+  required string sha = 3;
+  required string file_name = 4;
+  required FileType file_type = 5;
+  optional uint32 width = 6;
+  optional uint32 height = 7;
+  optional uint32 duration = 8;
+  optional uint32 original = 9;
+}
+
+message FileType {
+  required uint32 file_type = 1;
+  required uint32 pic_format = 2;
+  required uint32 video_format = 3;
+  required uint32 voice_format = 4;
+}

@@ -1,0 +1,69 @@
+[package]
+name = "ntrim-tools"
+version = "0.0.1"
+description = "Core part of the `ntrim`"
+
+rust-version.workspace = true
+edition.workspace = true
+license.workspace = true
+homepage.workspace = true
+repository.workspace = true
+
+documentation = "https://github.com/inmes-dev/ntrnm"
+readme = "../../README.md"
+
+keywords = ["ntrim", "oicq", "qqbot", "icqq", "bot"]
+categories = ["api-bindings", "asynchronous"]
+
+[features]
+# NB: When adding features here, don't forget to update ntrim's Cargo.toml
+default = []
+full = []
+extend_cqcode = []
+
+[dependencies]
+tokio = { version = "1.37.0", features = ["full"] }
+tokio-util = "0.7.10"
+bytes = "1.6.0"
+prost = "0.12.3"
+log = "0.4.21"
+url = { version = "2.5.0", features = ["serde"] }
+serde = { version = "1.0.197", features = ["derive"] }
+serde_json = "1.0.115"
+serde_with_macros = "3.7.0"
+uuid = { version = "1.8.0", features = ["v4"] }        # for attaching input files
+derive_more = "0.99.17"
+thiserror = "1.0.58"
+chrono = { version = "0.4.37", default-features = false }
+bitflags = { version = "2.5.0" }
+hex = "0.4.3"
+rand = "0.9.0-alpha.1"
+byteorder = "1.5.0"
+generic-array = "1.0.0"
+typenum = "1.17.0"
+flate2 = { version = "1.0.17", features = ["zlib-ng"], default-features = false }
+#p256 = { features = ["ecdh"], default-features = false }
+md5 = "0.7.0"
+signal-hook = "0.3.17"
+futures = "0.3"
+anyhow = "1.0.82"
+
+[dev-dependencies]
+tokio = { version = "1.37.0", features = ["full"] }
+cool_asserts = "2.0.3"
+
+[package.metadata.docs.rs]
+features = ["full", "nightly", "tokio/rt-multi-thread"]
+rustdoc-args = ["--cfg", "docsrs", "-Znormalize-docs"]
+
+# https://github.com/rust-lang/rust/issues/88791
+cargo-args = ["-Zunstable-options", "-Zrustdoc-scrape-examples"]
+
+[package.metadata.release]
+tag-prefix = "core-"
+enable-features = ["full"]
+pre-release-replacements = [
+    { file = "README.md", search = "ntrim-tools = \"[^\"]+\"", replace = "ntrim-tools = \"{{version}}\"" },
+    { file = "src/lib.rs", search = "ntrim-tools = \"[^\"]+\"", replace = "ntrim-tools = \"{{version}}\"" },
+    { file = "CHANGELOG.md", search = "## unreleased", replace = "## unreleased\n\n## {{version}} - {{date}}", exactly = 1 },
+]

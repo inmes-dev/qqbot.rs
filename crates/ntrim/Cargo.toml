@@ -1,0 +1,99 @@
+# Cargo template from teloxide
+# https://github.com/teloxide/teloxide
+
+[package]
+name = "ntrim"
+version = "0.0.1"
+description = "Ntrim is a qqbot framework for Rust"
+
+rust-version.workspace = true
+
+edition.workspace = true
+license.workspace = true
+homepage.workspace = true
+repository.workspace = true
+
+documentation = "https://docs.rs/ntrim/" # TODO(Document)
+readme = "../../README.md"
+
+keywords = ["ntrim", "oicq", "qq-bot", "qq-bot-api", "bot"]
+categories = ["web-programming", "api-bindings", "asynchronous"]
+
+
+[features]
+default = ["onebot", "sql", "extend_cqcode"]
+# 扩展CQ码
+extend_cqcode = ["ntrim-core/extend_cqcode", "ntrim-tools/extend_cqcode"]
+sql = ["ntrim-core/sql"]
+
+# backend
+onebot = []
+kritor = []
+
+
+[dependencies]
+ntrim-core = { version = "0.0.1", path = "../ntrim-core", default-features = false }
+ntrim-tools = { version = "0.0.1", path = "../ntrim-tools", default-features = false }
+
+clap = { version = "4.5.4", features = ["derive"] }
+pretty_env_logger = "0.5.0"
+reqwest = { version = "0.12.2", features = [
+    "json",
+    "stream",
+    "multipart",
+    "gzip",
+    "deflate",
+    "http2",
+    "rustls-tls"
+], default-features = false }
+serde_json = "1.0.115"
+serde_toml = "0.0.1"
+serde = { version = "1.0.197", features = ["derive"] }
+serde_derive = "1.0.197"
+
+tokio = { version = "1.37.0", features = ["full"] }
+tokio-stream = "0.1.15"
+
+anyhow = "1.0.82"
+url = "2.5.0"
+log = "0.4.21"
+bytes = "1.6.0"
+derive_more = "0.99.17"
+thiserror = "1.0.58"
+chrono = { version = "0.4.37", features = ["now"] }
+
+bincode = { version = "2.0.0-rc.3" }
+rand = { version = "0.8.5" }
+hex = "0.4.3"
+toml = "0.8.12"
+time = "0.3.36"
+
+[dev-dependencies]
+rand = "0.8.5"
+pretty_env_logger = "0.5.0"
+serde = "1.0.197"
+serde_json = "1.0.115"
+tokio = { version = "1.8", features = ["full"] }
+reqwest = "0.12.2"
+chrono = "0.4.37"
+tokio-stream = "0.1.15"
+criterion = { version = "0.5.1", features = ["html_reports"] }
+
+[package.metadata.docs.rs]
+# NB: can't use `all-features = true`, because `sqlite-storage-nativetls` conflicts with `sqlite-storage-rustls`
+features = ["full", "nightly"]
+rustdoc-args = ["--cfg", "docsrs"]
+rustc-args = ["--cfg", "dep_docsrs"]
+cargo-args = ["-Zunstable-options", "-Zrustdoc-scrape-examples"]
+
+[package.metadata.release]
+tag-prefix = ""
+enable-features = ["full"]
+pre-release-replacements = [
+    { file = "../../README.md", search = "ntrim = \\{ version = \"[^\"]+\"", replace = "ntrim = { version = \"{{version}}\"" },
+    { file = "../../CHANGELOG.md", search = "## unreleased", replace = "## unreleased\n\n## {{version}} - {{date}}", exactly = 1 },
+]
+
+[[bench]]
+name = "fibonacci"
+harness = false

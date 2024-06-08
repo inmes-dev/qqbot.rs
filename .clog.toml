@@ -1,0 +1,6 @@
+[clog]
+repository = "https://github.com/inmes-dev/ntrnm"
+subtitle = "ntrnm Release"
+
+[sections]
+Documentation = ["docs", "doc"]

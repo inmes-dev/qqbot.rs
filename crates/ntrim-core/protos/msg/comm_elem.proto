@@ -1,0 +1,104 @@
+syntax = "proto2";
+
+package msg;
+
+message Elem {
+  oneof aio_elem {
+    Text text = 1;
+    OnlineImage online_image = 3;
+    NotOnlineImage not_online_image = 4;
+    ElemFlags2 flags2 = 9;
+    ExtraData extra = 16;
+    GeneralFlags general_flags = 37;
+    LightArk ark_json = 51;
+    CommonElem common_elem = 53;
+  };
+}
+
+message OnlineImage {
+
+}
+
+message NotOnlineImage {
+  optional string file_path = 1;
+  required bytes pic_md5 = 7;
+  optional bool original = 13;
+  optional string orig_url = 15;
+}
+
+message ExtraData {
+  optional string group_nick = 1;
+  optional string unique_title = 7;
+}
+
+message GeneralFlags {
+  optional uint32 bubble_diy_text_id = 1;
+  optional uint32 bubble_sub_id = 16;
+  optional uint32 pendant_id = 17;
+  optional bytes pb_reverse = 19;
+
+  message PbReverse {
+    optional uint32 mobile_custom_font = 15;
+    optional uint32 pendant_diy_id = 25;
+    optional uint32 face_id = 30;
+    optional uint32 diy_font_timestamp = 31;
+    optional uint32 req_font_effect_id = 34;
+    optional uint32 subfont_id = 41;
+    optional uint32 vip_type = 51;
+    optional uint32 vip_level = 52;
+    optional uint32 user_bigclub_level = 54;
+    optional uint32 user_bigclub_flag = 55;
+    optional uint32 nameplate = 56;
+    optional uint32 nameplate_vip = 71;
+    optional uint32 gray_nameplate = 72;
+    optional bytes user_vip_info = 73;
+    optional uint32 unknown = 96;
+  }
+}
+
+message ElemFlags2 {
+  optional uint32 color_text_id = 1;
+}
+
+message Text {
+  required string text = 1;
+  optional bytes attr_6 = 3;
+
+  //optional TextReversed reversed = 12;
+
+  message TextReversed {
+    optional uint64 target_uin = 4;
+    optional uint64 target_uid = 9;
+
+    oneof desc {
+      Link link = 14;
+    }
+
+    message Link {
+      required string title = 1;
+      required string description = 2;
+      required string icon = 3;
+    }
+  }
+}
+
+message LightArk {
+  required bytes data = 1;
+}
+
+message CommonElem {
+  required uint32 service_type = 1;
+  required bytes data = 2;
+  optional uint32 business_type = 3;
+
+  message CommonFaceElem {
+    required uint32 face_id = 1;
+    optional string face_name = 2;
+    optional string face_desc = 3;
+  }
+
+  message CommonBigFaceElem {
+    required uint32 face_id = 3;
+    optional string face_name = 7;
+  }
+}

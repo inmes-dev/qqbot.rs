@@ -1,0 +1,31 @@
+syntax = "proto2";
+
+package msg;
+
+import "msg/comm_msg.proto";
+
+// MessageSvc.PbSendMsg
+message SendMsgReq {
+  required RoutingHead routing_head = 1;
+  required ContentHead content_head = 2;
+  required MessageBody msg_body = 3;
+  required uint64 msg_seq = 4;
+  required uint64 msg_time = 5;
+  required uint32 via = 8;
+
+  message ContentHead {
+    required uint64 pkg_num = 1;
+    required uint32 pkg_index = 2;
+    required uint32 div_seq = 3;
+  }
+
+  message RoutingHead {
+    optional C2C c2c = 1;
+    optional Grp grp = 2;
+  }
+
+  message C2C {
+    optional uint64 uin = 1;
+    required string uid = 2;
+  }
+}

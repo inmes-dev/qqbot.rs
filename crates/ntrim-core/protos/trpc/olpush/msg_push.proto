@@ -1,0 +1,16 @@
+syntax = "proto2";
+
+package trpc.olpush;
+
+import "msg/comm_msg.proto";
+
+// trpc.msg.olpush.OlPushService.MsgPush
+message MsgPush {
+  required Message msg = 1;
+}
+
+message Message {
+  required msg.RoutingHead routing_head = 1;
+  required msg.ContentHead content_head = 2;
+  required msg.MessageBody msg_body = 3;
+}
