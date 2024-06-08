@@ -12,7 +12,7 @@ use crate::pb::msg::common_elem::{CommonBigFaceElem, CommonFaceElem};
 use crate::pb::trpc::olpush::{ * };
 use crate::servlet::olpush::msg::{Contact, MessageRecord};
 
-pub(super) async fn parse_elements(bot: &Arc<Bot>, record: &mut MessageRecord, elems: Vec<Elem>) {
+pub(crate) async fn parse_elements(bot: &Arc<Bot>, record: &mut MessageRecord, elems: Vec<Elem>) {
     let mut single_element = false;
     let result = &mut record.elements;
     for elem in elems {
@@ -64,17 +64,33 @@ pub(super) async fn parse_elements(bot: &Arc<Bot>, record: &mut MessageRecord, e
 
             AioElem::NotOnlineImage(image) => {
                 let md5 = hex::encode(image.pic_md5).to_uppercase();
+                let url = format!(
+                    "https://c2cpicdw.qpic.cn{}",
+                    image.orig_url.unwrap_or(format!("/offpic_new/0/0-0-{}/0?term=2", md5).to_string())
+                );
+                result.push(CQCode::Special(Box::new(Image::new(
+                    image.file_path.map_or(md5 + ".jpg", |v| {
+                        v.replace("{", "").replace("}", "").replace("-", "")
+                    }), url, image.original.unwrap_or(false)
+                ))));
+            }
+
+            AioElem::CustomFace(image) => {
+                let md5 = hex::encode(image.pic_md5).to_uppercase();
                 let url = format!("https://{}{}", match record.contact {
                     Contact::Group(..) => "gchat.qpic.cn",
                     Contact::Friend(..) | Contact::Stranger(..) => "c2cpicdw.qpic.cn",
-                }, image.orig_url.unwrap_or(match record.contact {
+                }, image.original_url.unwrap_or(match record.contact {
                     Contact::Group(..) => format!("/gchatpic_new/0/0-0-{}/0?term=2", md5),
                     Contact::Friend(..) | Contact::Stranger(..) => format!("/offpic_new/0/0-0-{}/0?term=2", md5),
                 }.to_string()));
                 result.push(CQCode::Special(Box::new(Image::new(
-                    image.file_path.unwrap_or(md5 + ".png"), url, image.original.unwrap_or(false)
+                    image.file_path.map_or(md5 + ".png", |v| {
+                        v.replace("{", "").replace("}", "").replace("-", "")
+                    }), url, image.original != Some(0)
                 ))));
             }
+
 
             AioElem::ArkJson(LightArk { data }) => {
                 warn!("Unsupported ArkJson")

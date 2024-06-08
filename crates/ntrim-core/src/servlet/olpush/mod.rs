@@ -1,5 +1,5 @@
-mod msg;
-mod notice;
+pub mod msg;
+pub mod notice;
 
 use std::collections::HashMap;
 use std::sync::Arc;

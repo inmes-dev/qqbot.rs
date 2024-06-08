@@ -1,9 +1,9 @@
-mod decoder;
-mod encoder;
+pub mod decoder;
+pub mod encoder;
 pub mod record;
 
 use std::sync::Arc;
-use chrono::Local;
+use chrono::{Local, NaiveDateTime};
 use log::warn;
 use prost::Message as ProstMessage;
 use crate::bot::Bot;
@@ -48,6 +48,15 @@ pub(super) async fn on_group_msg(bot: Arc<Bot>, msg: Message) {
     };
 
     let mut rich_text = msg.msg_body.rich_text.unwrap();
+
+    #[cfg(feature = "sql")]
+    if crate::db::is_initialized() {
+        let pool = crate::db::PG_POOL.get().unwrap();
+        MessageRecord::insert(pool, &bot, &record, rich_text.encode_to_vec()).await.map_err(|e| {
+            warn!("Failed to insert message to pgsql: {:?}", e);
+        }).unwrap();
+    }
+
     decoder::parse_elements(&bot, &mut record, rich_text.elems).await;
 
     let raw_msg = record.elements.iter().map(|x| x.to_string()).collect::<Vec<String>>().join("");

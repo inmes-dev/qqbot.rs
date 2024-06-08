@@ -7,12 +7,20 @@ message Elem {
     Text text = 1;
     OnlineImage online_image = 3;
     NotOnlineImage not_online_image = 4;
+    CustomFace custom_face = 8;
     ElemFlags2 flags2 = 9;
     ExtraData extra = 16;
     GeneralFlags general_flags = 37;
     LightArk ark_json = 51;
     CommonElem common_elem = 53;
   };
+}
+
+message CustomFace {
+  optional string file_path = 2;
+  required bytes pic_md5 = 13;
+  optional string original_url = 16;
+  optional uint32 original = 26;
 }
 
 message OnlineImage {

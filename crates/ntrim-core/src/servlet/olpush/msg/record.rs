@@ -1,5 +1,5 @@
 use std::fmt::Display;
-use serde::{Deserialize, Serialize};
+use sqlx::FromRow;
 use ntrim_tools::cqp::CQCode;
 
 pub enum Contact {

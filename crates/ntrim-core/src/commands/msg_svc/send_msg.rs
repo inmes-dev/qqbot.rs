@@ -34,7 +34,7 @@ impl SendMsgCodec {
             msg_time: thread_rng().gen_range(1700000000 .. 3100000000),
             via: 0
         };
-        info!("Generated a message: {:?}", hex::encode(&send_msg.encode_to_vec()));
+        //info!("Generated a message: {:?}", hex::encode(&send_msg.encode_to_vec()));
         Some(send_msg.encode_to_vec())
     }
 

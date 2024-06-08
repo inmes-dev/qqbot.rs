@@ -12,6 +12,6 @@ server = "https://kritor.support/android/v9.0.20"
 # 是否启用数据库
 # 启用数据库之后，可以使用获取历史消息功能
 enable = true
-# postgres://用户名:密码@远程地址/
-address = "postgres://postgres:postgres@localhost/"
+# postgres://用户名:密码@远程地址/数据库名称
+address = "postgres://postgres:postgres@localhost/postgres"
 
