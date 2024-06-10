@@ -11,10 +11,10 @@ pub struct At {
 impl Display for At {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
         if cfg!(feature = "extend_cqcode") {
-            write!(f, "[CQ:at,qq={},content={}]", self.qq, encode_cq_code_param(&self.content))
-        } else {
-            write!(f, "[CQ:at,qq={}]", self.qq)
+            #[cfg(feature = "extend_cqcode")]
+            return write!(f, "[CQ:at,qq={},content={}]", self.qq, encode_cq_code_param(&self.content));
         }
+        write!(f, "[CQ:at,qq={}]", self.qq)
     }
 }
 

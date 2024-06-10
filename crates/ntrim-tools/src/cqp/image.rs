@@ -1,5 +1,5 @@
 use std::fmt::{Display, Formatter};
-use crate::cqp::SpecialCQCode;
+use crate::cqp::{encode_cq_code_param, SpecialCQCode};
 
 pub struct Image {
     pub file: String,
@@ -34,7 +34,7 @@ impl Image {
 
 impl Display for Image {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-        write!(f, "[CQ:image,file={},url={},type={},subType={}]", self.file, self.url, self.r#type, self.sub_type)
+        write!(f, "[CQ:image,file={},url={},type={},subType={}]", self.file, encode_cq_code_param(&self.url), self.r#type, self.sub_type)
     }
 }
 

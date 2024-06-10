@@ -1,19 +1,20 @@
 use std::collections::HashMap;
 use std::sync::{Mutex, OnceLock};
 use std::sync::atomic::AtomicU32;
+use bytes::Bytes;
 use chrono::Local;
-use log::info;
+use log::{info};
 use once_cell::sync::Lazy;
 use prost::Message;
 use rand::{Rng, RngCore, thread_rng};
 use ntrim_macros::command;
 use crate::pb::msg::send_msg_req::{ContentHead, RoutingHead};
-use crate::pb::msg::{MessageBody, RichText, SendMsgReq};
+use crate::pb::msg::{MessageBody, RichText, SendMsgReq, SendMsgRsp};
 use crate::pb::trpc::status::{SilenceState, SsoHeartBeatRequest, SsoHeartBeatResponse};
 
 struct SendMsgCodec;
 
-#[command("MessageSvc.PbSendMsg", "send_msg", Protobuf, Service)]
+#[command("MessageSvc.PbSendMsg", "send_raw_msg", Protobuf, Service)]
 impl SendMsgCodec {
     async fn generate(
         bot: &Arc<Bot>,
@@ -39,13 +40,22 @@ impl SendMsgCodec {
     }
 
     async fn parse(bot: &Arc<Bot>, data: Vec<u8>) -> Option<u64> {
-        info!("Received a message from the server: {:?}", hex::encode(&data));
-        None
+        let data = Bytes::from(data);
+        let send_msg = SendMsgRsp::decode(data.as_ref()).ok()?;
+        if send_msg.result != 0 {
+            error!("Failed to send message, code: {}", send_msg.result);
+            return None;
+        }
+        if send_msg.msg_seq.is_none() {
+            error!("Failed to send message, reason: account is under wind control");
+            return None;
+        }
+        return Some(send_msg.msg_seq.unwrap());
     }
 }
 
-fn next_msg_seq(uin: u64) -> u32 {
-    static MAP_SEQ: Lazy<Mutex<HashMap<u64, AtomicU32>>> = Lazy::new(|| Mutex::new(HashMap::new()));
+fn next_msg_seq(uin: i64) -> u32 {
+    static MAP_SEQ: Lazy<Mutex<HashMap<i64, AtomicU32>>> = Lazy::new(|| Mutex::new(HashMap::new()));
     let mut map_seq = MAP_SEQ.lock().unwrap();
     let seq = map_seq.entry(uin).or_insert(AtomicU32::new(17050));
     if seq.load(std::sync::atomic::Ordering::Relaxed) >= 0x8000 {

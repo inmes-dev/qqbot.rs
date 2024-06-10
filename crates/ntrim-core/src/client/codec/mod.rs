@@ -29,6 +29,6 @@ pub(crate) fn enable_print_codec_logs() -> &'static bool {
     static ENABLE_PRINT_CODEC_LOG: OnceLock<bool> = OnceLock::new();
     ENABLE_PRINT_CODEC_LOG.get_or_init(|| {
         option_env!("ENABLE_PRINT_CODEC_LOG")
-            .map_or(true, |v| v == "1")
+            .map_or(false, |v| v == "1")
     })
 }

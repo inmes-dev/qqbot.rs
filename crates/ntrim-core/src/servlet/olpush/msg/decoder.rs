@@ -62,17 +62,10 @@ pub(crate) async fn parse_elements(bot: &Arc<Bot>, record: &mut MessageRecord, e
                 }
             }
 
-            AioElem::NotOnlineImage(image) => {
-                let md5 = hex::encode(image.pic_md5).to_uppercase();
-                let url = format!(
-                    "https://c2cpicdw.qpic.cn{}",
-                    image.orig_url.unwrap_or(format!("/offpic_new/0/0-0-{}/0?term=2", md5).to_string())
-                );
-                result.push(CQCode::Special(Box::new(Image::new(
-                    image.file_path.map_or(md5 + ".jpg", |v| {
-                        v.replace("{", "").replace("}", "").replace("-", "")
-                    }), url, image.original.unwrap_or(false)
-                ))));
+            AioElem::Face(face) => {
+                result.push(CQCode::Special(Box::new(Face::new(
+                    face.face_id
+                ))))
             }
 
             AioElem::CustomFace(image) => {
@@ -91,6 +84,18 @@ pub(crate) async fn parse_elements(bot: &Arc<Bot>, record: &mut MessageRecord, e
                 ))));
             }
 
+            AioElem::NotOnlineImage(image) => {
+                let md5 = hex::encode(image.pic_md5).to_uppercase();
+                let url = format!(
+                    "https://c2cpicdw.qpic.cn{}",
+                    image.orig_url.unwrap_or(format!("/offpic_new/0/0-0-{}/0?term=2", md5).to_string())
+                );
+                result.push(CQCode::Special(Box::new(Image::new(
+                    image.file_path.map_or(md5 + ".jpg", |v| {
+                        v.replace("{", "").replace("}", "").replace("-", "")
+                    }), url, image.original.unwrap_or(false)
+                ))));
+            }
 
             AioElem::ArkJson(LightArk { data }) => {
                 warn!("Unsupported ArkJson")

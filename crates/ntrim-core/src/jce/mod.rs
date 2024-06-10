@@ -1,7 +1,10 @@
 use std::collections::HashMap;
+use std::sync::atomic::AtomicU32;
+use std::sync::Mutex;
 
 use bytes::{BufMut, Bytes, BytesMut};
 use jcers::{JceGet, JcePut};
+use once_cell::sync::Lazy;
 
 #[macro_export]
 macro_rules! jce_struct {
@@ -12,6 +15,16 @@ macro_rules! jce_struct {
             pub $field: $field_t),*
         }
     };
+}
+
+pub fn next_request_id(uin: i64) -> i32 {
+    static MAP_REQUEST_ID: Lazy<Mutex<HashMap<i64, AtomicU32>>> = Lazy::new(|| Mutex::new(HashMap::new()));
+    let mut request_id = MAP_REQUEST_ID.lock().unwrap();
+    let seq = request_id.entry(uin).or_insert(AtomicU32::new(17050));
+    if seq.load(std::sync::atomic::Ordering::Relaxed) >= 0x8000 {
+        seq.store(17050, std::sync::atomic::Ordering::Relaxed);
+    }
+    seq.fetch_add(1, std::sync::atomic::Ordering::Relaxed) as i32
 }
 
 #[derive(Debug, Clone, JceGet, JcePut, Default)]
@@ -57,5 +70,19 @@ pub fn pack_uni_request_data(data: &[u8]) -> Bytes {
 pub mod onlinepush {
     pub mod reqpushmsg {
         include!("onlinepush.reqpushmsg.rs");
+    }
+}
+
+pub mod friendlist {
+    pub mod get_troop_list {
+        include!("friendlist.get_troop_list.rs");
+    }
+
+    pub mod get_troop_member_list {
+        include!("friendlist.get_troop_member_list.rs");
+    }
+
+    pub mod get_friend_group_list {
+        include!("friendlist.get_friend_group_list.rs");
     }
 }

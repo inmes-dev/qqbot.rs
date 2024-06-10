@@ -16,7 +16,7 @@ pub mod device;
 
 #[derive(Debug, Clone)]
 pub struct SsoSession {
-    pub uin: u64,
+    pub uin: i64,
     pub uid: String,
 
     pub tickets: HashMap<SigType, Ticket>,
@@ -51,7 +51,7 @@ pub struct SsoSession {
 
 impl SsoSession {
     pub fn new(
-        account: (u64, String),
+        account: (i64, String),
         protocol: Protocol,
         device: Device,
         ksid: [u8; 16],

@@ -1,9 +1,11 @@
 pub mod register;
 pub mod register_old;
 pub mod wtlogin;
-mod status;
-mod richmedia;
-mod msg_svc;
+pub mod status;
+pub mod richmedia;
+pub mod msg_svc;
+pub mod troop;
+pub mod friend;
 
 /// timeout不可以小于5s时间，否则可能导致内存泄露
 #[macro_export]

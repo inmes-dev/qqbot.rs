@@ -59,7 +59,7 @@ pub(super) async fn on_group_msg(bot: Arc<Bot>, msg: Message) {
 
     decoder::parse_elements(&bot, &mut record, rich_text.elems).await;
 
-    let raw_msg = record.elements.iter().map(|x| x.to_string()).collect::<Vec<String>>().join("");
+    /*let raw_msg = record.elements.iter().map(|x| x.to_string()).collect::<Vec<String>>().join("");
     if raw_msg == "ping" {
         let contact = crate::pb::msg::send_msg_req::RoutingHead {
             c2c: None,
@@ -114,7 +114,7 @@ pub(super) async fn on_group_msg(bot: Arc<Bot>, msg: Message) {
                 },
             ]
         }).await;
-    }
+    }*/
 
     println!("{}", record);
 }

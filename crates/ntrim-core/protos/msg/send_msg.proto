@@ -29,3 +29,9 @@ message SendMsgReq {
     required string uid = 2;
   }
 }
+
+
+message SendMsgRsp {
+  required uint32 result = 1;
+  optional uint64 msg_seq = 11;
+}

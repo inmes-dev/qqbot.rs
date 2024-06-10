@@ -25,7 +25,7 @@ bitflags! {
 }
 
 pub struct Bot {
-    pub unique_id: u64,
+    pub unique_id: i64,
     /// TCP client.
     pub client: Arc<TrpcClient>,
     /// Bot status.

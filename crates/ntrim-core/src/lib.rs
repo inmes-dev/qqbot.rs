@@ -14,7 +14,9 @@ pub(crate) mod jce;
 
 
 #[cfg(feature = "sql")]
-pub mod db;
+pub(crate) mod db;
 
 #[cfg(feature = "sql")]
 pub use crate::db::initialize_pool;
+#[cfg(feature = "sql")]
+pub use crate::db::ensure_table_exists;

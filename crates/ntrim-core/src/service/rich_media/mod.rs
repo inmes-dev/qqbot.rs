@@ -33,12 +33,12 @@ static mut RKEY: Lazy<Mutex<HashMap<u8, RKey>>> = Lazy::new(|| Mutex::new(HashMa
 
 pub async fn get_download_reky(bot: &Arc<Bot>, flag: u8) -> Result<Option<RKey>, Error> {
     let refresh_rkey = || async {
-        let value =  await_response!(tokio::time::Duration::from_secs(5), async {
+        let value = await_response!(tokio::time::Duration::from_secs(5), async {
             let rx = Bot::request_download_rkey(bot).await;
             if let Some(rx) = rx {
                 rx.await.map_err(|e| Error::new(e))
             } else {
-                Err(Error::msg("Tcp connection exception"))
+                Err(Error::msg("Unable to get download rkey: tcp connection exception"))
             }
         }, |value| {
             Ok(value)

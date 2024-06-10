@@ -15,7 +15,7 @@ impl MessageRecord {
         let exists: (bool,) = sqlx::query_as(format!("SELECT EXISTS ( \
             SELECT 1 \
             FROM information_schema.tables \
-            WHERE table_schema = 'public' AND TABLE_NAME = '{}' \
+            WHERE TABLE_NAME = '{}' \
         )", TABLE_NAME).as_str()).fetch_one(pool).await?;
         if !exists.0 {
             sqlx::query(format!("CREATE TABLE {} (\
@@ -45,7 +45,7 @@ impl MessageRecord {
             Contact::Stranger(name, id, uid) => ("stranger", name, *id as i64, uid.as_str())
         };
         sqlx::query(format!(r#"
-            INSERT INTO "public"."{}" ("contact_type", "contact_name", "contact_uin", "contact_uid", "sender_id", "sender_uid", "sender_nick", "sender_unique_title", "msg_time", "msg_seq", "msg_uid", "receiver", "elements")
+            INSERT INTO "{}" ("contact_type", "contact_name", "contact_uin", "contact_uid", "sender_id", "sender_uid", "sender_nick", "sender_unique_title", "msg_time", "msg_seq", "msg_uid", "receiver", "elements")
             VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)
             ON CONFLICT ("msg_uid") DO UPDATE SET
                 "contact_type" = EXCLUDED."contact_type",
@@ -73,7 +73,7 @@ impl MessageRecord {
             .bind(&message.msg_time)
             .bind(message.msg_seq as i64)
             .bind(message.msg_uid as i64)
-            .bind(bot.unique_id as i64)
+            .bind(bot.unique_id)
             .bind(raw_elems)
             .execute(pool)
             .await?;
@@ -97,12 +97,12 @@ impl MessageRecord {
             msg_uid,
             receiver,
             elements
-        FROM "public"."TABLE_NAME"
+        FROM "TABLE_NAME"
         WHERE msg_uid = $1 AND receiver = $2
         "#,
         )
             .bind(msg_uid as i64)
-            .bind(bot.unique_id as i64)
+            .bind(bot.unique_id)
             .fetch_one(pool)
             .await?;
 

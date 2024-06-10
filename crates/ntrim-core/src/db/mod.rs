@@ -1,12 +1,18 @@
 pub mod simple_record;
 pub mod message_record;
+pub mod group_list;
+mod group_member_list;
+mod friend_list;
 
 use std::sync::OnceLock;
 use sqlx::{Acquire, PgPool};
 use sqlx::postgres::PgPoolOptions;
 use ntrim_tools::tokiort::global_tokio_runtime;
+use crate::commands::friend::{FriendInfo, FriendListResponse};
+pub use crate::commands::troop::GroupInfo;
+pub use crate::commands::troop::GroupMemberInfo;
 pub use crate::db::simple_record::SimpleMessageRecord;
-use crate::servlet::olpush::msg::MessageRecord;
+pub use crate::servlet::olpush::msg::MessageRecord;
 
 pub static PG_POOL: OnceLock<PgPool> = OnceLock::new();
 
@@ -32,10 +38,12 @@ async fn check_database_connection() -> Result<(), anyhow::Error> {
 pub async fn ensure_table_exists() -> Result<(), anyhow::Error> {
     check_database_connection().await?;
     let pool = PG_POOL.get().unwrap();
-    let result = tokio::try_join!(
+    tokio::try_join!(
         SimpleMessageRecord::create_table(pool),
-        MessageRecord::create_table(pool)
+        MessageRecord::create_table(pool),
+        GroupInfo::create_table(pool),
+        GroupMemberInfo::create_table(pool),
+        FriendListResponse::create_table(pool),
     )?;
-
     Ok(())
 }

@@ -1,7 +1,6 @@
 
 use log::info;
 use prost::{DecodeError, Message};
-use sqlx::encode::IsNull::No;
 use ntrim_macros::command;
 use crate::{oidb_request, oidb_response, pb};
 use crate::pb::trpc::rich_media_ntv2::{ * };

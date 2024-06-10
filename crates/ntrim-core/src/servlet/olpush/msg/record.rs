@@ -1,5 +1,4 @@
 use std::fmt::Display;
-use sqlx::FromRow;
 use ntrim_tools::cqp::CQCode;
 
 pub enum Contact {

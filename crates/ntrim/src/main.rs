@@ -9,10 +9,12 @@ extern crate pretty_env_logger;
 
 use std::sync::Arc;
 use std::sync::atomic::{AtomicBool, Ordering};
+use anyhow::Error;
 use bytes::{BufMut, BytesMut};
 use clap::Parser;
 use ntrim_core::bot::{Bot};
 use ntrim_core::client::qsecurity::QSecurity;
+use ntrim_core::commands::troop::GroupMemberInfo;
 use ntrim_core::events::wtlogin_event::WtloginResponse;
 use ntrim_core::session::SsoSession;
 use ntrim_tools::sigint;
@@ -51,7 +53,7 @@ async fn main() {
     #[cfg(feature = "sql")]
     if config.sql.enable {
         ntrim_core::initialize_pool(&config.sql.address).await;
-        ntrim_core::db::ensure_table_exists().await.expect("Failed to ensure table exists");
+        ntrim_core::ensure_table_exists().await.expect("Failed to ensure table exists");
     }
 
     let ((bot, mut result), immediate_refresh) = match args.login_mode {
@@ -82,6 +84,31 @@ async fn main() {
         if ntrim_core::refresh_session::refresh_sig(&bot).await {
             bot.client.set_lost().await;
         }
+    }
+
+    #[cfg(feature = "sql")]
+    if config.sql.enable {
+        info!("数据库支持已开启，开始刷新群列表/群成员列表/好友列表！");
+        let mut start = std::time::Instant::now();
+        let group_list = Bot::get_troop_list(&bot, true)
+            .await.expect("Failed to get group list");
+        info!("刷新群列表成功，共{}个群聊, 耗时: {:?}", group_list.len(), start.elapsed());
+        for group_info in group_list {
+            let start = std::time::Instant::now();
+            match Bot::get_troop_member_list(&bot, group_info.code, group_info.owner_uin).await {
+                Ok(list) => {
+                    info!("刷新群成员列表成功，群号: {}, 共{}个成员, 耗时: {:?}", group_info.code, list.len(), start.elapsed());
+                }
+                Err(e) => {
+                    warn!("Failed to get group member list for {}: {}", group_info.code, e)
+                }
+            }
+        }
+
+        let start = std::time::Instant::now();
+        let friend_list = Bot::get_friend_list(&bot)
+            .await.expect("Failed to get friend list");
+        info!("刷新好友列表成功，共{}个好友, 耗时: {:?}", friend_list.friends.len(), start.elapsed());
     }
 
     info!("OneBot backend status: {}", cfg!(feature = "onebot"));

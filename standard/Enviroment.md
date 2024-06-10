@@ -53,7 +53,7 @@ IS_NT_IPV6=1 ./ntrim
 | 参数名                     | 说明         | 默认值  |
 |-------------------------|------------|------|
 | RUST_LOG                | 日志级别       | info |
-| ENABLE_PRINT_CODEC_LOG  | 是否打印编解码器日志 | 1    |
+| ENABLE_PRINT_CODEC_LOG  | 是否打印编解码器日志 | 0    |
 | ENABLE_PRINT_PUSHPARAMS | 是否打印推送参数   | 0    |
 
 ### ENABLE_PRINT_PUSHPARAMS

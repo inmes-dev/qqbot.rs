@@ -1,0 +1,17 @@
+syntax = "proto3";
+
+package friendlist;
+
+message D50ReqBody {
+  int64 appid = 1;
+  int32 maxPkgSize = 2;
+  int32 startTime = 3;
+  int32 startIndex = 4;
+  int32 reqNum = 5;
+  repeated int64 uinList = 6;
+  int32 reqMusicSwitch = 91001;
+  int32 reqMutualmarkAlienation = 101001;
+  int32 reqMutualmarkScore = 141001;
+  int32 reqKsingSwitch = 151001;
+  int32 reqMutualmarkLbsshare = 181001;
+}

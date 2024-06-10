@@ -6,7 +6,9 @@ use prost::{DecodeError, Message};
 use ntrim_macros::servlet;
 use crate::bot::Bot;
 use crate::client::packet::FromServiceMsg;
+#[cfg(feature = "sql")]
 use crate::db;
+#[cfg(feature = "sql")]
 use crate::db::SimpleMessageRecord;
 use crate::pb::trpc::register::{ * };
 

@@ -21,7 +21,7 @@ categories = ["web-programming", "api-bindings", "asynchronous"]
 
 
 [features]
-default = ["onebot", "sql", "extend_cqcode"]
+default = ["onebot", "extend_cqcode", "sql"]
 # 扩展CQ码
 extend_cqcode = ["ntrim-core/extend_cqcode", "ntrim-tools/extend_cqcode"]
 sql = ["ntrim-core/sql"]

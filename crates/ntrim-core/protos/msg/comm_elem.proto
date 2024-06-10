@@ -5,6 +5,7 @@ package msg;
 message Elem {
   oneof aio_elem {
     Text text = 1;
+    Face face = 2;
     OnlineImage online_image = 3;
     NotOnlineImage not_online_image = 4;
     CustomFace custom_face = 8;
@@ -14,6 +15,10 @@ message Elem {
     LightArk ark_json = 51;
     CommonElem common_elem = 53;
   };
+}
+
+message Face {
+  required uint32 face_id = 1;
 }
 
 message CustomFace {

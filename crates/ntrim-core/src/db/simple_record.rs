@@ -1,4 +1,3 @@
-use std::fmt::format;
 use anyhow::Error;
 use chrono::{NaiveDateTime};
 use sqlx::{FromRow, PgPool};
@@ -19,7 +18,7 @@ impl SimpleMessageRecord {
         let exists: (bool,) = sqlx::query_as(format!("SELECT EXISTS ( \
             SELECT 1 \
             FROM information_schema.tables \
-            WHERE table_schema = 'public' AND TABLE_NAME = '{}' \
+            WHERE TABLE_NAME = '{}' \
         )", TABLE_NAME).as_str()).fetch_one(pool).await?;
         if !exists.0 {
             sqlx::query(format!("CREATE TABLE {} ( \
@@ -35,7 +34,7 @@ impl SimpleMessageRecord {
 
     pub async fn insert(pool: &PgPool, message: SimpleMessageRecord) -> Result<(), Error> {
         sqlx::query(format!(r#"
-            INSERT INTO "public"."{}" ("id", "name", "seq", "last_seq", "latest_msg_time")
+            INSERT INTO "{}" ("id", "name", "seq", "last_seq", "latest_msg_time")
             VALUES ($1, $2, $3, $4, $5)
             ON CONFLICT ("id") DO UPDATE SET
                 "name" = EXCLUDED."name",

@@ -120,7 +120,7 @@ fn encode(session: &RwLockReadGuard<SsoSession>, msg: ToServiceMsg, dst: &mut By
 
 #[inline]
 fn generate_qqsecurity_head(
-    account: (u64, &str),
+    account: (i64, &str),
     qimei: &str,
     qsec_info: Option<QSecurityResult>
 ) -> Vec<u8> {
