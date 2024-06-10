@@ -17,6 +17,7 @@ impl crate::commands::friend::FriendListResponse {
                 bot BIGINT NOT NULL, \
                 uin BIGINT NOT NULL, \
                 name VARCHAR(255) NOT NULL, \
+                uid VARCHAR(255) NOT NULL, \
                 remark VARCHAR(255) NOT NULL, \
                 face_id SMALLINT NOT NULL, \
                 group_id SMALLINT NOT NULL, \
@@ -46,10 +47,11 @@ impl crate::commands::friend::FriendListResponse {
 
     pub async fn insert(pool: &PgPool, bot_id: i64, friend: crate::commands::friend::FriendInfo) -> Result<(), Error> {
         sqlx::query(format!(r#"
-            INSERT INTO "{}" ("bot", "uin", "name", "remark", "face_id", "group_id")
-            VALUES ($1, $2, $3, $4, $5, $6)
+            INSERT INTO "{}" ("bot", "uin", "name", "uid", "remark", "face_id", "group_id")
+            VALUES ($1, $2, $3, $4, $5, $6, $7)
             ON CONFLICT ("bot", "uin") DO UPDATE SET
                 "name" = EXCLUDED."name",
+                "uid" = EXCLUDED."uid",
                 "remark" = EXCLUDED."remark",
                 "face_id" = EXCLUDED."face_id",
                 "group_id" = EXCLUDED."group_id"
@@ -57,6 +59,7 @@ impl crate::commands::friend::FriendListResponse {
             .bind(bot_id)
             .bind(friend.uin)
             .bind(&friend.nick)
+            .bind(&friend.uid)
             .bind(&friend.remark)
             .bind(friend.face_id)
             .bind(friend.group_id)

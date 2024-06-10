@@ -28,6 +28,7 @@ pub struct FriendInfo {
     pub remark: String,
     pub face_id: i16,
     pub group_id: i16,
+    pub uid: String
 }
 
 /// 好友分组信息
@@ -55,7 +56,7 @@ impl GetFriendGroupListCodec {
         let mut d50 = BytesMut::new();
         prost::Message::encode(
             &pb::friendlist::D50ReqBody {
-                appid: 1002,
+                appid: 10002,
                 req_music_switch: 1,
                 req_mutualmark_alienation: 1,
                 req_ksing_switch: 1,
@@ -65,7 +66,7 @@ impl GetFriendGroupListCodec {
             &mut d50,
         )
             .expect("failed to encode pb");
-        let req = crate::jce::friendlist::get_friend_group_list::FriendListRequest {
+        let req = jce::friendlist::get_friend_group_list::FriendListRequest {
             reqtype: 3,
             if_reflush: if friend_start_index <= 0 { 0 } else { 1 },
             uin: bot.unique_id,
@@ -77,7 +78,7 @@ impl GetFriendGroupListCodec {
             group_count: group_list_count as u8,
             if_get_msf_group: 0,
             if_show_term_type: 1,
-            version: 27,
+            version: 40,
             uin_list: vec![],
             app_type: 0,
             if_get_dov_id: 0,
@@ -129,6 +130,7 @@ impl GetFriendGroupListCodec {
                     remark: f.remark,
                     face_id: f.face_id,
                     group_id: f.group_id as i16,
+                    uid: f.uid,
                 })
                 .collect(),
             friend_groups: resp

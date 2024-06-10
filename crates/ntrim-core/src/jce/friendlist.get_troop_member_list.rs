@@ -111,6 +111,13 @@ jce_struct!(FriendInfo {
     54 => new_lover_diamond_flag: u8,
     55 => ext_sns_frd_data: Bytes,
     56 => mutual_mark_data: Bytes,
+    57 => ext_online_status: i64,
+    58 => battery_status: i32,
+    59 => music_info: Bytes,
+    60 => poi_info: Bytes,
+    61 => ext_business_info: Bytes,
+    62 => ext_info: Bytes,
+    63 => uid: String,
 });
 
 #[derive(Debug, Clone, JceGet, JcePut, Default)]
