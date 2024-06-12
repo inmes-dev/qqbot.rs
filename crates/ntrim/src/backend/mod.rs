@@ -3,8 +3,5 @@
 pub mod onebot;
 
 #[cfg(feature = "kritor")]
-mod kritor;
+pub mod kritor;
 
-struct Backend {
-
-}

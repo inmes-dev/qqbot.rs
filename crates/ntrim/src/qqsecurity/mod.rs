@@ -35,9 +35,10 @@ impl QSecurityViaHTTP {
             format!("{}/", sign_server)
         };
         let mut builder = Client::builder()
-            .connect_timeout(std::time::Duration::from_secs(15))
-            .timeout(std::time::Duration::from_secs(30))
+            .connect_timeout(std::time::Duration::from_secs(10))
+            .timeout(std::time::Duration::from_secs(15))
             .tcp_nodelay(true)
+            .pool_max_idle_per_host(10)
             .use_rustls_tls();
 
         if option_env!("ENABLE_SIGN_PROXY").map_or(false, |v| v == "1") {
@@ -65,9 +66,7 @@ impl QSecurity for QSecurityViaHTTP {
     fn ping<'a>(&'a self) -> Pin<Box<dyn Future<Output=bool> + Send + 'a>> {
         Pin::from(Box::new(async move {
             let response = match self.client
-                .get(self.sign_server.clone() + "ping")
-                .send()
-                .await {
+                .get(self.sign_server.clone() + "ping").send().await {
                 Ok(response) => response,
                 Err(e) => {
                     error!("Failed to ping sign server (0x0): {}", e);

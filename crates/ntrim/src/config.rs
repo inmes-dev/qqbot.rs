@@ -9,6 +9,40 @@ pub struct Config {
     pub qsign: QSign,
     pub developer: Developer,
     pub sql: Sql,
+    #[cfg(feature = "onebot")]
+    pub onebot: OneBot,
+}
+
+#[derive(Debug, Clone, Deserialize, Serialize)]
+#[cfg(feature = "onebot")]
+pub struct OneBot {
+    pub http: HTTTPServer,
+    pub ws: WebSocketServer,
+    pub pws: PassiveWebSocketServer,
+}
+
+#[derive(Debug, Clone, Deserialize, Serialize)]
+#[cfg(feature = "onebot")]
+pub struct HTTTPServer {
+    pub enable: bool,
+    pub host: String,
+    pub port: u16,
+}
+
+#[derive(Debug, Clone, Deserialize, Serialize)]
+#[cfg(feature = "onebot")]
+pub struct WebSocketServer {
+    pub enable: bool,
+    pub host: String,
+    pub port: u16,
+}
+
+#[derive(Debug, Clone, Deserialize, Serialize)]
+#[cfg(feature = "onebot")]
+pub struct PassiveWebSocketServer {
+    pub enable: bool,
+    pub host: String,
+    pub port: u16,
 }
 
 #[derive(Debug, Clone, Deserialize, Serialize)]
@@ -37,9 +71,3 @@ pub fn parse_local_config(path: PathBuf) -> Option<Config> {
     None
 }
 
-/*pub fn save_config_file(path: PathBuf, config: Config) {
-    let toml = toml::to_string(&config).unwrap();
-    if let Err(e) = write(path, toml) {
-        error!("Failed to write config file: {}", e);
-    }
-}*/

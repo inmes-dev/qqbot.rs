@@ -15,3 +15,28 @@ enable = true
 # postgres://用户名:密码@远程地址/数据库名称
 address = "postgres://postgres:postgres@localhost/postgres"
 
+[onebot]
+
+[onebot.http]
+# 是否开启主动HTTP
+enable = true
+# 主动HTTP监听地址
+host = "0.0.0.0"
+# 主动HTTP监听端口
+port = 24601
+
+[onebot.ws]
+# 是否开启主动WS
+enable = false
+# 主动WS监听地址
+host = "0.0.0.0"
+# 主动WS监听端口
+port = 24602
+
+[onebot.pws]
+# 是否允许被动WebSocket (反向WS)
+enable = false
+# 被动WS监听地址
+host = "0.0.0.0"
+# 被动WS监听端口
+port = 24603

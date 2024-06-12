@@ -19,6 +19,7 @@ use ntrim_core::events::wtlogin_event::WtloginResponse;
 use ntrim_core::session::SsoSession;
 use ntrim_tools::sigint;
 use crate::args::{Args, LoginMode};
+use crate::backend::onebot;
 use crate::login::session::token_login;
 use crate::qqsecurity::QSecurityViaHTTP;
 
@@ -116,7 +117,7 @@ async fn main() {
 
     if cfg!(feature = "onebot") {
         info!("Using OneBot backend, see https://github.com/botuniverse/onebot");
-
+        onebot::launch(bot, config.onebot).await;
     } else if cfg!(feature = "kritor") {
         info!("Using Kritor backend, see https://github.com/KarinJS/kritor");
 
