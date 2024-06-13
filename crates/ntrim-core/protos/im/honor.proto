@@ -1,0 +1,8 @@
+syntax = "proto2";
+
+package im.honor;
+
+message GroupUserCardHonor {
+  repeated int32 id = 1;
+  optional uint32 level = 2;
+}

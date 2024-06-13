@@ -5,6 +5,7 @@ mod get_stranger_info;
 mod get_friend_list;
 mod get_group_info;
 mod get_group_list;
+mod get_group_member_list;
 
 use actix_web::{web};
 
@@ -17,6 +18,7 @@ pub fn init_routes(cfg: &mut web::ServiceConfig) {
             .configure(get_friend_list::register)
             .configure(get_group_info::register)
             .configure(get_group_list::register)
+            .configure(get_group_member_list::register)
             .configure(set_qq_profile::register)
     );
 }

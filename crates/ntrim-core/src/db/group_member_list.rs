@@ -29,6 +29,7 @@ impl GroupMemberInfo {
                 shut_up_timestamp BIGINT NOT NULL, \
                 permission INT NOT NULL, \
                 uid VARCHAR(255) NOT NULL, \
+                honor int[], \
                 UNIQUE (group_id, uin) \
             )", TABLE_NAME).as_str()).execute(pool).await?;
         }
@@ -39,8 +40,8 @@ impl GroupMemberInfo {
         sqlx::query(format!(r#"INSERT INTO {} (
                 group_id, uin, gender, nick_name, card_name, level,
                 join_time, last_speak_time, special_title, special_title_expire_time,
-                shut_up_timestamp, permission, uid
-            ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)
+                shut_up_timestamp, permission, uid, honor
+            ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14)
             ON CONFLICT (group_id, uin)
             DO UPDATE SET
                 gender = EXCLUDED.gender,
@@ -52,7 +53,8 @@ impl GroupMemberInfo {
                 special_title = EXCLUDED.special_title,
                 special_title_expire_time = EXCLUDED.special_title_expire_time,
                 shut_up_timestamp = EXCLUDED.shut_up_timestamp,
-                permission = EXCLUDED.permission
+                permission = EXCLUDED.permission,
+                honor = EXCLUDED.honor
         "#, TABLE_NAME).as_str())
             .bind(info.group_code)
             .bind(info.uin)
@@ -67,6 +69,7 @@ impl GroupMemberInfo {
             .bind(info.shut_up_timestamp)
             .bind(info.permission as i32)
             .bind(info.uid)
+            .bind(&info.honor[..])
             .execute(pool)
             .await?;
         Ok(())
@@ -81,6 +84,7 @@ impl GroupMemberInfo {
         let mut members = Vec::new();
 
         for row in rows {
+            let honor = row.get::<Vec<i32>, _>("honor");
             members.push(GroupMemberInfo {
                 group_code: row.get("group_id"),
                 uin: row.get("uin"),
@@ -99,6 +103,7 @@ impl GroupMemberInfo {
                 special_title: row.get("special_title"),
                 special_title_expire_time: row.get("special_title_expire_time"),
                 shut_up_timestamp: row.get("shut_up_timestamp"),
+                honor,
                 ..Default::default()
             });
         }

@@ -2,8 +2,11 @@ use std::collections::HashMap;
 use anyhow::Error;
 use bytes::{Buf, BufMut, Bytes, BytesMut};
 use jcers::{Jce, JcePut};
+use prost::Message;
+use serde::Serialize;
 #[cfg(feature = "sql")]
 use sqlx::FromRow;
+use url::quirks::host;
 use ntrim_macros::command;
 use ntrim_tools::oicq::group_code2uin;
 #[cfg(feature = "sql")]
@@ -13,10 +16,11 @@ use crate::db;
 use crate::{await_response, jce};
 use crate::jce::{next_request_id, pack_uni_request_data};
 use crate::jce::friendlist::get_troop_member_list::{TroopMemberInfo, TroopMemberListRequest};
+use crate::pb::im::honor::GroupUserCardHonor;
 
 struct GetTroopMemberListCodec;
 
-#[derive(Debug, Default, Clone)]
+#[derive(Debug, Default, Clone, Serialize)]
 #[cfg_attr(feature = "sql", derive(sqlx::FromRow))]
 pub struct GroupMemberInfo {
     pub group_code: i64,
@@ -32,9 +36,10 @@ pub struct GroupMemberInfo {
     pub shut_up_timestamp: i64,
     pub permission: GroupMemberPermission,
     pub uid: String,
+    pub honor: Vec<i32>,
 }
 
-#[derive(Debug, Clone, Default)]
+#[derive(Debug, Clone, Default, Serialize)]
 #[repr(i32)]
 pub enum GroupMemberPermission {
     Owner = 1,
@@ -94,8 +99,11 @@ impl GetTroopMemberListCodec {
                 Error::msg(format!("decode_group_members failed: {}", e))
             )?;
         let next_uin = r.get_by_tag(4).map_err(Error::from)?;
-        let mut l: Vec<GroupMemberInfo> = Vec::new();
+        let mut l = Vec::new();
         for m in members {
+            let honor = GroupUserCardHonor::decode(m.group_honor).map_or(vec![], |value| {
+                value.id
+            });
             l.push(GroupMemberInfo {
                 uin: m.member_uin,
                 gender: match m.gender {
@@ -117,6 +125,7 @@ impl GetTroopMemberListCodec {
                     _ => GroupMemberPermission::Member,
                 },
                 uid: m.uid,
+                honor,
                 ..Default::default()
             })
         }
