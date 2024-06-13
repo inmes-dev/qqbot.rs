@@ -14,7 +14,7 @@ impl Bot {
         if d2.expire_time <= 0 {
             return;
         }
-        let refresh_advance_time = option_env!("REFRESH_ADVANCE_TIME")
+        let refresh_advance_time = std::env::var("REFRESH_ADVANCE_TIME")
             .map_or(60 * 60 * 24, |value|
                 value.parse::<i64>().unwrap_or(60 * 60 * 24)
             );

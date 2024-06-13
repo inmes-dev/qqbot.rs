@@ -28,7 +28,7 @@ impl From<io::Error> for CodecError {
 pub(crate) fn enable_print_codec_logs() -> &'static bool {
     static ENABLE_PRINT_CODEC_LOG: OnceLock<bool> = OnceLock::new();
     ENABLE_PRINT_CODEC_LOG.get_or_init(|| {
-        option_env!("ENABLE_PRINT_CODEC_LOG")
+        std::env::var("ENABLE_PRINT_CODEC_LOG")
             .map_or(false, |v| v == "1")
     })
 }

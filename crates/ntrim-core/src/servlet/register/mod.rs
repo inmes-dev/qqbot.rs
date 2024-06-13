@@ -51,7 +51,7 @@ impl RegisterProxyServlet {
 
     fn on_push_params(servlet: &RegisterProxyServlet, push_params: Result<TrpcPushParams, DecodeError>) {
         static ENABLE_PRINT_PUSHPARAMS: OnceLock<bool> = OnceLock::new();
-        if !*ENABLE_PRINT_PUSHPARAMS.get_or_init(|| option_env!("ENABLE_PRINT_PUSHPARAMS").map_or(false, |v| v == "1")) {
+        if !*ENABLE_PRINT_PUSHPARAMS.get_or_init(|| std::env::var("ENABLE_PRINT_PUSHPARAMS").map_or(false, |v| v == "1")) {
             return;
         }
         let push_params = push_params.unwrap();

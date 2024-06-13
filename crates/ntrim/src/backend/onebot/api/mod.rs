@@ -62,6 +62,8 @@ pub enum OnebotError {
     InternalError(String),
     #[error("an logic error occurred: {0}")]
     LogicError(String),
+    #[error("unsupported Content-Type error occurred: {0}")]
+    UnsupportedContentTypeError(String),
 }
 
 impl actix_web::ResponseError for OnebotError {
@@ -70,6 +72,7 @@ impl actix_web::ResponseError for OnebotError {
         match &self {
             Self::InternalError(..) => StatusCode::INTERNAL_SERVER_ERROR,
             OnebotError::LogicError(..) => StatusCode::BAD_REQUEST,
+            OnebotError::UnsupportedContentTypeError(..) => StatusCode::UNSUPPORTED_MEDIA_TYPE,
         }
     }
 
@@ -90,11 +93,16 @@ impl actix_web::ResponseError for OnebotError {
 #[macro_export]
 macro_rules! init_route {
     ($route:expr, $struct_name:ident, $handler:expr) => {
+        use crate::backend::onebot::api::OnebotError;
+        use tokio_stream::StreamExt;
+        use actix_web::{Error, Responder, web};
+
         pub(super) fn register(cfg: &mut web::ServiceConfig) {
         type Params = $struct_name;
 
         async fn handle_get(req: actix_web::HttpRequest) -> actix_web::Result<String> {
             let data = req.app_data::<web::Data<Arc<Bot>>>().unwrap();
+            let bot = data.get_ref();
             let params = req.query_string();
             let params = match serde_urlencoded::from_str::<Params>(params) {
                 Ok(params) => params,
@@ -103,7 +111,7 @@ macro_rules! init_route {
                     return Err(Error::from(oe));
                 }
             };
-            let resp = $handler(data, params).await;
+            let resp = $handler(bot, params).await?;
             Ok(serde_json::to_string(&resp).unwrap())
         }
 
@@ -112,7 +120,10 @@ macro_rules! init_route {
             match content_type {
                 Some("application/json") => handle_post_json(req, payload).await,
                 Some("application/x-www-form-urlencoded") => handle_post_urlencoded(req, payload).await,
-                _ => Err(actix_web::error::ErrorBadRequest("Unsupported Content-Type")),
+                _ => {
+                    let oe = content_type.unwrap_or("").to_string();
+                    Err(Error::from(OnebotError::UnsupportedContentTypeError(oe)))
+                },
             }
         }
 
@@ -125,13 +136,14 @@ macro_rules! init_route {
             let params: Params = match serde_json::from_slice(&body) {
                 Ok(val) => val,
                 Err(e) => {
-                    let oe = OnebotError::LogicError(format!("query params failed: {}", e));
-                    return Err(Error::from(oe));
+                    return Err(Error::from(OnebotError::LogicError(format!("query params failed: {}", e))));
                 }
             };
 
             let data = req.app_data::<web::Data<Arc<Bot>>>().unwrap();
-            let resp = $handler(data, params).await;
+            let bot = data.get_ref();
+
+            let resp = $handler(bot, params).await?;
             Ok(serde_json::to_string(&resp).unwrap())
         }
 
@@ -142,6 +154,8 @@ macro_rules! init_route {
             }
 
             let data = req.app_data::<web::Data<Arc<Bot>>>().unwrap();
+            let bot = data.get_ref();
+
             let params = match serde_urlencoded::from_bytes::<Params>(body.as_ref()) {
                 Ok(val) => val,
                 Err(e) => {
@@ -150,7 +164,7 @@ macro_rules! init_route {
                 }
             };
 
-            let resp = $handler(data, params).await;
+            let resp = $handler(bot, params).await?;
             Ok(serde_json::to_string(&resp).unwrap())
         }
 

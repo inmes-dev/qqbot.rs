@@ -24,6 +24,7 @@ pub struct FriendListResponse {
 #[cfg_attr(feature = "sql", derive(sqlx::FromRow))]
 pub struct FriendInfo {
     pub uin: i64,
+    #[sqlx(rename = "name")]
     pub nick: String,
     pub remark: String,
     pub face_id: i16,
@@ -166,7 +167,21 @@ impl GetFriendGroupListCodec {
 }
 
 impl Bot {
-    pub async fn get_friend_list(self: &Arc<Self>) -> Result<FriendListResponse, Error> {
+    pub async fn get_friend_list(self: &Arc<Self>, refresh: bool) -> Result<FriendListResponse, Error> {
+        let bot_id = self.unique_id;
+        #[cfg(feature = "sql")]
+        if crate::db::is_initialized() && !refresh {
+            let pool = crate::db::PG_POOL.get().unwrap();
+            let friend_list = FriendListResponse::get_friend_list(pool, bot_id).await?;
+            let group_list = FriendListResponse::get_group_list(pool, bot_id).await?;
+            let cnt = friend_list.len();
+            return Ok(FriendListResponse {
+                friends: friend_list,
+                friend_groups: group_list.into_iter().map(|g| (g.group_id, g)).collect(),
+                total_count: cnt as i16,
+                online_friend_count: 0,
+            });
+        }
         let mut output = FriendListResponse::default();
         loop {
             match await_response!(tokio::time::Duration::from_secs(5), async {
@@ -200,7 +215,6 @@ impl Bot {
         }
         #[cfg(feature = "sql")]
         if crate::db::is_initialized() {
-            let bot_id = self.unique_id;
             let mut output = output.clone();
             tokio::spawn(async move {
                 let pool = crate::db::PG_POOL.get().unwrap();

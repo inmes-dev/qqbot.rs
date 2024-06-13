@@ -41,7 +41,7 @@ impl QSecurityViaHTTP {
             .pool_max_idle_per_host(10)
             .use_rustls_tls();
 
-        if option_env!("ENABLE_SIGN_PROXY").map_or(false, |v| v == "1") {
+        if std::env::var("ENABLE_SIGN_PROXY").map_or(false, |v| v == "1") {
             let proxy_url = get_system_proxy();
             if let Some(proxy_url) = proxy_url {
                 match reqwest::Proxy::all(&proxy_url) {

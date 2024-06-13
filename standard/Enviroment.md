@@ -12,17 +12,18 @@ IS_NT_IPV6=1 ./ntrim
 
 # 通用环境变量
 
-| 参数名                  | 说明             | 默认值              |
-|----------------------|----------------|------------------|
-| IS_NT_IPV6           | 是否启用 trpc IPv6 | 0                |
-| NT_SEND_QUEUE_SIZE   | trpc协议发包队列大小   | 32               |
-| HEARTBEAT_INTERVAL   | 标准心跳间隔时间(秒)    | 270              |
-| AUTO_RECONNECT       | trpc自动重连       | 1                |
-| RECONNECT_INTERVAL   | trpc自动重连间隔(秒)  | 5                |
-| AUTO_REFRESH_SESSION | 自动刷新质押的会话      | 1                |
-| REFRESH_ADVANCE_TIME | 自动会话刷新时间提前(秒)  | 60 * 60 * 24 * 1 |
-| SQL_MAX_CONNECTIONS  | 数据库最大连接数       | 5                |
-| ENABLE_SIGN_PROXY    | 是否允许签名请求自动走代理  | 0                |
+| 参数名                  | 说明                         | 默认值              |
+|----------------------|----------------------------|------------------|
+| IS_NT_IPV6           | 是否启用 trpc IPv6             | 0                |
+| NT_SEND_QUEUE_SIZE   | trpc协议发包队列大小               | 32               |
+| HEARTBEAT_INTERVAL   | 标准心跳间隔时间(秒)                | 270              |
+| AUTO_RECONNECT       | trpc自动重连                   | 1                |
+| RECONNECT_INTERVAL   | trpc自动重连间隔(秒)              | 5                |
+| AUTO_REFRESH_SESSION | 自动刷新质押的会话                  | 1                |
+| REFRESH_ADVANCE_TIME | 自动会话刷新时间提前(秒)              | 60 * 60 * 24 * 1 |
+| SQL_MAX_CONNECTIONS  | 数据库最大连接数                   | 5                |
+| ENABLE_SIGN_PROXY    | 是否允许签名请求自动走代理              | 0                |
+| IMM_REFRESH_CACHE    | 是否上线成功立即刷新群列表/群成员列表/好友列表缓存 | 1                |
 
 ### HEARTBEAT_INTERVAL
 

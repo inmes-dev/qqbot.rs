@@ -13,6 +13,7 @@ pub struct Protocol {
     pub locale_id: u32,
     pub build_time: u32,
     pub sdk_version: String,
+    pub build_ver: String,
 }
 
 pub mod protocol {
@@ -43,6 +44,7 @@ pub mod protocol {
                 locale_id: 2052,
                 build_time: 0x65800651,
                 sdk_version: "6.0.0.2558".to_string(),
+                build_ver: "9.0.20.5844".to_string(),
             }
         })
     }

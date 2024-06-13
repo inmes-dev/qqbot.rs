@@ -10,8 +10,8 @@ use crate::client::codec::LAST_PACKET_TIME;
 
 impl Bot {
     pub(crate) fn do_heartbeat(bot: Arc<Bot>) {
-        let heartbeat_interval = option_env!("HEARTBEAT_INTERVAL")
-            .unwrap_or("270").parse::<u64>().unwrap();
+        let heartbeat_interval = std::env::var("HEARTBEAT_INTERVAL")
+            .unwrap_or("270".to_string()).parse::<u64>().unwrap();
         tokio::spawn(async move {
             let no_packet_interval = Duration::from_secs(10);
             let nt_interval = Duration::from_secs(heartbeat_interval);

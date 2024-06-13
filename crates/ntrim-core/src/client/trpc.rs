@@ -27,9 +27,9 @@ impl TrpcClient {
         session: SsoSession,
         qsec_mod: Arc<dyn QSecurity>
     ) -> Result<Arc<Self>, ClientError> {
-        let is_ipv6 = option_env!("IS_NT_IPV6").map_or(false, |v| v == "1");
+        let is_ipv6 = std::env::var("IS_NT_IPV6").map_or(false, |v| v == "1");
         let (tx, rx) = tokio::sync::mpsc::channel(
-            option_env!("NT_SEND_QUEUE_SIZE")
+            std::env::var("NT_SEND_QUEUE_SIZE")
                 .map_or(32, |value| value.parse::<usize>().unwrap_or(32))
         );
         let trpc = Arc::new(Self {
@@ -82,7 +82,7 @@ impl TrpcClient {
         tokio::spawn(async move {
             let qsec = Arc::clone(&trpc.qsec);
             let mut count = 0;
-            let ct = option_env!("NTRNM_SCT").map_or(50, |v| v.parse().unwrap());
+            let ct = std::env::var("NTRNM_SCT").map_or(50, |v| v.parse().unwrap());
             while trpc.is_connected().await || trpc.is_lost().await {
                 let status = qsec.ping().await;
                 count += 1;

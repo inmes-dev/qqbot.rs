@@ -12,6 +12,7 @@ use std::sync::atomic::{AtomicBool, Ordering};
 use anyhow::Error;
 use bytes::{BufMut, BytesMut};
 use clap::Parser;
+use ntrim_core::await_response;
 use ntrim_core::bot::{Bot};
 use ntrim_core::client::qsecurity::QSecurity;
 use ntrim_core::commands::troop::GroupMemberInfo;
@@ -88,7 +89,7 @@ async fn main() {
     }
 
     #[cfg(feature = "sql")]
-    if config.sql.enable {
+    if config.sql.enable && std::env::var("IMM_REFRESH_CACHE").map_or(true, |v| v == "1") {
         info!("数据库支持已开启，开始刷新群列表/群成员列表/好友列表！");
         let mut start = std::time::Instant::now();
         let group_list = Bot::get_troop_list(&bot, true)
@@ -107,9 +108,24 @@ async fn main() {
         }
 
         let start = std::time::Instant::now();
-        let friend_list = Bot::get_friend_list(&bot)
+        let friend_list = Bot::get_friend_list(&bot, true)
             .await.expect("Failed to get friend list");
         info!("刷新好友列表成功，共{}个好友, 耗时: {:?}", friend_list.friends.len(), start.elapsed());
+    }
+
+    if let Ok(Some(profile)) = await_response!(tokio::time::Duration::from_secs(5), async {
+        let rx = Bot::get_profile_detail(&bot, bot.unique_id).await;
+        if let Some(rx) = rx {
+            rx.await.map_err(|e| anyhow::Error::from(e))
+        } else {
+            Err(Error::msg("Unable to handle_get_qq_profile: tcp connection exception"))
+        }
+    }, |value| {
+        Ok(value)
+    }, |e| {
+        Err(e)
+    }) {
+        info!("欢迎你！{}，即此羡闲逸，怅然吟《式微》。", profile.nick_name);
     }
 
     info!("OneBot backend status: {}", cfg!(feature = "onebot"));

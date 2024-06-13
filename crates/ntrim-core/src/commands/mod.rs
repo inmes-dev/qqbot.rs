@@ -6,6 +6,7 @@ pub mod richmedia;
 pub mod msg_svc;
 pub mod troop;
 pub mod friend;
+mod contact;
 
 /// timeout不可以小于5s时间，否则可能导致内存泄露
 #[macro_export]
@@ -24,7 +25,7 @@ macro_rules! await_response {
 #[macro_export]
 macro_rules! oidb_request {
     ($cmd:expr, $service:expr, $buffer:expr) => {
-         Some(pb::oidb::TrpcOidbRequest {
+        Some(crate::pb::oidb::TrpcOidbRequest {
             cmd: $cmd,
             service: $service,
             body: $buffer,
@@ -35,24 +36,26 @@ macro_rules! oidb_request {
 
 #[macro_export]
 macro_rules! oidb_response {
-    ($cmd:expr, $service:expr, $buffer:expr) => {{
-        let data = match pb::oidb::TrpcOidbResponse::decode($buffer) {
+    ($cmd:expr, $service:expr, $buffer:expr) => {
+        {
+        let data = match crate::pb::oidb::TrpcOidbResponse::decode($buffer) {
             Ok(data) => Some(data),
             Err(e) => {
-                info!("Failed to decode TrpcOidbResponse: {:?}", e);
+                log::info!("Failed to decode TrpcOidbResponse: {:?}", e);
                 None
             }
         };
         if let Some(rsp) = data {
             if rsp.cmd != $cmd || rsp.service != $service {
-                info!("Invalid TrpcOidbResponse: {:?}", rsp);
+                log::info!("Invalid TrpcOidbResponse: {:?}", rsp);
                 None
             } else {
                 Some(rsp.body)
             }
         } else {
-            info!("Invalid TrpcOidbResponse: {:?}", $buffer);
+            log::info!("Invalid TrpcOidbResponse: {:?}", $buffer);
             None
         }
-    }};
+        }
+    };
 }

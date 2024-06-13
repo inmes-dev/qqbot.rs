@@ -68,7 +68,7 @@ impl OlPushServlet {
             //525 => notice::on_group_member_invite(bot, msg_push),
             //529 => notice::on_offline_file(bot, msg_push),
 
-            _ => if option_env!("ENABLE_PRINT_UNKNOWN_PUSH").map_or(true, |v| v.parse::<bool>().unwrap()) {
+            _ => if std::env::var("ENABLE_PRINT_UNKNOWN_PUSH").map_or(true, |v| v.parse::<bool>().unwrap()) {
                 warn!("Unknown msg type: {:?}, buf: {}", msg.content_head.msg_type, hex::encode(&from.wup_buffer))
             }
         }

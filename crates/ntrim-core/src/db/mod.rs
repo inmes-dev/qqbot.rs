@@ -22,7 +22,7 @@ pub fn is_initialized() -> bool {
 
 pub async fn initialize_pool(addr: &str) {
     let pool = PgPoolOptions::new()
-        .max_connections(option_env!("SQL_MAX_CONNECTIONS").map_or(5, |v| v.parse().unwrap()))
+        .max_connections(std::env::var("SQL_MAX_CONNECTIONS").map_or(5, |v| v.parse().unwrap()))
         .connect(addr)
         .await
         .expect("Failed to create PgPool");

@@ -48,10 +48,10 @@ impl Bot {
         RegisterProxyServlet::initialize(&bot).await;
         OlPushServlet::initialize(&bot).await;
 
-        if option_env!("AUTO_RECONNECT").map_or(true, |v| v == "1") {
+        if std::env::var("AUTO_RECONNECT").map_or(true, |v| v == "1") {
             Self::auto_reconnect(&bot).await;
         }
-        if option_env!("AUTO_REFRESH_SESSION").map_or(true, |v| v == "1") {
+        if std::env::var("AUTO_REFRESH_SESSION").map_or(true, |v| v == "1") {
             Self::auto_refresh_session(&bot).await;
         }
 
