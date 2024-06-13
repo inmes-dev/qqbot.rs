@@ -1,0 +1,61 @@
+syntax = "proto3";
+
+package get_group_member_card_info;
+
+message GroupMemberReqBody {
+  int64 groupCode = 1;
+  int64 uin = 2;
+  bool newClient = 3;
+  int32 clientType = 4;
+  int32 richCardNameVer = 5;
+}
+
+message GroupMemberRspBody {
+  int64 groupCode = 1;
+  int32 selfRole = 2;
+  GroupMemberInfo memInfo = 3;
+  bool boolSelfLocationShared = 4;
+  int32 groupType = 5;
+}
+
+message GroupMemberInfo {
+  int64 uin = 1;
+  int32 result = 2;
+  bytes errmsg = 3;
+  bool IsFriend = 4;
+  bytes remark = 5;
+  bool IsConcerned = 6;
+  int32 credit = 7;
+  bytes card = 8;
+  int32 sex = 9;
+  bytes location = 10;
+  bytes nick = 11;
+  int32 age = 12;
+  bytes lev = 13;
+  int64 join = 14;
+  int64 lastSpeak = 15;
+  //repeated CustomEntry customEnties = 16;
+  //repeated GBarInfo gbarConcerned = 17;
+  bytes gbarTitle = 18;
+  bytes gbarUrl = 19;
+  int32 gbarCnt = 20;
+  bool isAllowModCard = 21;
+  bool isVip = 22;
+  bool isYearVip = 23;
+  bool isSuperVip = 24;
+  bool isSuperQq = 25;
+  int32 vipLev = 26;
+  int32 role = 27;
+  bool locationShared = 28;
+  int64 int64Distance = 29;
+  int32 concernType = 30;
+  bytes specialTitle = 31;
+  int32 specialTitleExpireTime = 32;
+  //FlowersEntry flowerEntry = 33;
+  //TeamEntry teamEntry = 34;
+  bytes phoneNum = 35;
+  bytes job = 36;
+  int32 medalId = 37;
+  int32 level = 39;
+  string honor = 41;
+}

@@ -10,7 +10,8 @@ impl Bot {
     pub(crate) async fn auto_reconnect(self: &Arc<Self>) {
         let bot = Arc::clone(self);
         tokio::spawn(async move {
-            let reconnect_interval = std::env::var("RECONNECT_INTERVAL").map_or(5, |value| value.parse::<u64>().unwrap_or(5));
+            let reconnect_interval = std::env::var("RECONNECT_INTERVAL")
+                .map_or(5, |value| value.parse::<u64>().unwrap_or(5));
             let mut attempt = 0;
             info!("Auto reconnect task started, interval: {}s", reconnect_interval);
             loop {

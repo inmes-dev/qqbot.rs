@@ -21,12 +21,17 @@ struct GetTroopListCodec;
 #[derive(Debug, Default, Clone, Serialize)]
 #[cfg_attr(feature = "sql", derive(sqlx::FromRow))]
 pub struct GroupInfo {
+    #[serde(rename="group_uin")]
     pub uin: i64,
     #[cfg_attr(feature = "sql", sqlx(rename = "id"))]
+    #[serde(rename="group_id")]
     pub code: i64,
+    #[serde(rename="group_name")]
     pub name: String,
+    #[serde(rename="group_memo")]
     pub memo: String,
     #[cfg_attr(feature = "sql", sqlx(rename = "owner"))]
+    #[serde(rename="group_owner")]
     pub owner_uin: i64,
     #[cfg_attr(feature = "sql", sqlx(rename = "create_time"))]
     pub group_create_time: i64,

@@ -36,6 +36,8 @@ pub struct GroupMemberInfo {
     pub shut_up_timestamp: i64,
     pub permission: GroupMemberPermission,
     pub uid: String,
+    pub area: String,
+    pub distance: i64,
     pub honor: Vec<i32>,
 }
 
@@ -152,7 +154,7 @@ impl Bot {
         let mut next_uin = 0;
         let mut list = Vec::new();
         loop {
-            match await_response!(tokio::time::Duration::from_secs(5), async {
+            match await_response!(tokio::time::Duration::from_secs(10), async {
                 let rx = Bot::_get_troop_member_list(self, group_id, next_uin).await;
                 if let Some(rx) = rx {
                     rx.await.map_err(|e| Error::new(e))

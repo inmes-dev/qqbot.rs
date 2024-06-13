@@ -110,4 +110,34 @@ impl GroupMemberInfo {
 
         Ok(members)
     }
+
+    pub async fn query_member(pool: &PgPool, group_id: i64, user_id: i64) -> Result<GroupMemberInfo, Error> {
+        let row = sqlx::query(format!("SELECT * FROM {} WHERE group_id = $1 AND uin = $2", TABLE_NAME).as_str())
+            .bind(group_id)
+            .bind(user_id)
+            .fetch_one(pool)
+            .await?;
+        let honor = row.get::<Vec<i32>, _>("honor");
+        Ok(GroupMemberInfo {
+            group_code: row.get("group_id"),
+            uin: row.get("uin"),
+            uid: row.get("uid"),
+            permission: match row.get::<i32, _>("permission") {
+                1 => Owner,
+                2 => Administrator,
+                _ => Member
+            },
+            gender: row.get("gender"),
+            nickname: row.get("nick_name"),
+            card_name: row.get("card_name"),
+            level: row.get("level"),
+            join_time: row.get("join_time"),
+            last_speak_time: row.get("last_speak_time"),
+            special_title: row.get("special_title"),
+            special_title_expire_time: row.get("special_title_expire_time"),
+            shut_up_timestamp: row.get("shut_up_timestamp"),
+            honor,
+            ..Default::default()
+        })
+    }
 }
