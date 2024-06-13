@@ -87,4 +87,8 @@ pub mod friendlist {
     pub mod get_friend_group_list {
         include!("friendlist.get_friend_group_list.rs");
     }
+
+    pub mod get_multi_group_info {
+        include!("friendlist.get_multi_group_info.rs");
+    }
 }

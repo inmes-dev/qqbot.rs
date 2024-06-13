@@ -3,6 +3,7 @@ use anyhow::Error;
 use bytes::{Buf, Bytes};
 use jcers::JcePut;
 use log::{info};
+use serde::Serialize;
 use ntrim_macros::command;
 use crate::{await_response, jce, oidb_request, oidb_response};
 
@@ -17,7 +18,7 @@ use crate::jce::friendlist::get_troop_list::TroopNumber;
 
 struct GetTroopListCodec;
 
-#[derive(Debug, Default, Clone)]
+#[derive(Debug, Default, Clone, Serialize)]
 #[cfg_attr(feature = "sql", derive(sqlx::FromRow))]
 pub struct GroupInfo {
     pub uin: i64,
