@@ -69,7 +69,7 @@ async fn handle_get_group_member_info(bot: &Arc<Bot>, params: GetGroupMemberInfo
         Err(e)
     }).map_err(|e|
         OnebotError::InternalError(format!("Failed to handle_get_group_member_info: {}", e))
-    )?.ok_or(OnebotError::InternalError("Get group member info is null".to_string()))?;
+    )?.ok_or(OnebotError::internal("Get group member info is null"))?;
     Ok(encode_group_info(info))
 }
 

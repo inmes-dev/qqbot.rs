@@ -20,7 +20,7 @@ use ntrim_core::events::wtlogin_event::WtloginResponse;
 use ntrim_core::session::SsoSession;
 use ntrim_tools::sigint;
 use crate::args::{Args, LoginMode};
-use crate::backend::onebot;
+use crate::backend::{onebot, UID_UIN_MAP};
 use crate::login::session::token_login;
 use crate::qqsecurity::QSecurityViaHTTP;
 
@@ -111,6 +111,19 @@ async fn main() {
         let friend_list = Bot::get_friend_list(&bot, true)
             .await.expect("Failed to get friend list");
         info!("刷新好友列表成功，共{}个好友, 耗时: {:?}", friend_list.friends.len(), start.elapsed());
+    }
+
+    let cache_mode = std::env::var("UID_CACHE_MODE").map_or("REVALIDATE".to_string(), |v| v);
+    if cache_mode == "FULL" {
+        let friend_list = Bot::get_friend_list(&bot, false)
+            .await.expect("Failed to get friend list");
+        for friend_info in friend_list.friends {
+            UID_UIN_MAP.insert(friend_info.uin, friend_info.uid);
+        }
+        info!("好友列表缓存已刷新，共{}个好友，预估占用: {}kb", UID_UIN_MAP.len(), (40 * UID_UIN_MAP.len() * 56) as f64 / 1024.0);
+    } else if cache_mode != "REVALIDATE" && cache_mode != "NONE" {
+        warn!("Unknown UID_CACHE_MODE: {}, fallback to REVALIDATE", cache_mode);
+        std::env::set_var("UID_CACHE_MODE", "REVALIDATE");
     }
 
     if let Ok(Some(profile)) = await_response!(tokio::time::Duration::from_secs(5), async {

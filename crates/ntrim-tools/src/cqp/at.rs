@@ -1,7 +1,9 @@
+use std::collections::HashMap;
 use std::fmt::{Display, Formatter};
-use crate::cqp::{encode_cq_code_param, SpecialCQCode};
+use anyhow::{anyhow, Error};
+use crate::cqp::{encode_cq_code_param};
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Default)]
 pub struct At {
     pub qq: u64,
     #[cfg(feature = "extend_cqcode")]
@@ -18,8 +20,13 @@ impl Display for At {
     }
 }
 
-impl SpecialCQCode for At {
-    fn get_type(&self) -> String {
-        "at".to_string()
+impl At {
+    pub(crate) fn from(params: &HashMap<String, String>) -> Result<Self, Error> {
+        let qq = params.get("qq").ok_or(anyhow!("At 缺少 'qq' 参数"))?.parse::<u64>()?;
+        Ok(At {
+            qq,
+            ..Default::default()
+        })
     }
 }
+

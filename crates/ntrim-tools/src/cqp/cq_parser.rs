@@ -1,5 +1,6 @@
 use std::collections::HashMap;
-use anyhow::Error;
+use anyhow::{anyhow, Error};
+use log::error;
 use crate::cqp::{ * };
 
 fn utf8_next_len(str: &[u8], offset: usize) -> usize {
@@ -110,7 +111,7 @@ pub fn parse_cq(data: &[u8]) -> Result<Vec<CQCode>, Error> {
                         cache.clear();
                     }
                     let cq_code = parse_special_cq(&cq_type, &params)?;
-                    result.push(CQCode::Special(cq_code));
+                    result.push(cq_code);
                     cq_type.clear();
                     params.clear();
                     key.clear();
@@ -139,13 +140,36 @@ pub fn parse_cq(data: &[u8]) -> Result<Vec<CQCode>, Error> {
     Ok(result)
 }
 
-fn parse_special_cq(flag: &str, params: &HashMap<String, String>) -> Result<Box<dyn SpecialCQCode>, Error> {
+pub(crate) fn parse_special_cq(flag: &str, params: &HashMap<String, String>) -> Result<CQCode, Error> {
     match flag {
-        "at" => Ok(Box::new(At {
-            qq: params.get("qq").ok_or_else(|| Error::msg("qq is none"))?.parse()?,
-            #[cfg(feature = "extend_cqcode")]
-            content: params.get("content").ok_or_else(|| Error::msg("content is none"))?.clone(),
-        })),
-        &_ => Err(Error::msg(format!("Parse cqcode failed: unknown cq code, type: {}", flag)))
+        "text" => Ok(CQCode::Text(params.get("text").unwrap().to_owned())),
+        "at" => Ok(CQCode::At(At::from(params)?)),
+        "face" => Ok(CQCode::Face(Face::from(params)?)),
+        "image" => Ok(CQCode::Image(Image::from(params)?)),
+        "record" => Ok(CQCode::Record(Record::from(params)?)),
+        "video" => Ok(CQCode::Video(Video::from(params)?)),
+        "reply" => Ok(CQCode::Reply(Reply::from(params)?)),
+        "poke" => Ok(CQCode::Poke(Poke::from(params)?)),
+        "dice" => Ok(CQCode::NewDice(NewDice::from(params)?)),
+        "rps" => Ok(CQCode::NewRPS(NewRPS::from(params)?)),
+        "music" => {
+            let music_type = params.get("type").ok_or(anyhow!("CustomMusic 缺少 'type' 参数"))?;
+            if music_type == "custom" {
+                Ok(CQCode::CustomMusic(CustomMusic::from(params)?))
+            } else {
+                Ok(CQCode::Music(Music::from(params)?))
+            }
+        },
+        "share" => Ok(CQCode::Share(Share::from(params)?)),
+        "location" => Ok(CQCode::Location(Location::from(params)?)),
+        "weather" => Ok(CQCode::Weather(Weather::from(params)?)),
+        "gift" => Ok(CQCode::Gift(Gift::from(params)?)),
+        "basketball" => Ok(CQCode::Basketball(Basketball::from(params)?)),
+        "bubble_face" => Ok(CQCode::BubbleFace(BubbleFace::from(params)?)),
+        "touch" => Ok(CQCode::Touch(Touch::from(params)?)),
+        &_ => {
+            error!("Parse cqcode failed: unknown cq code, type: {}", flag);
+            Err(anyhow!("Parse cqcode failed: unknown cq code, type: {}", flag))
+        }
     }
 }

@@ -847,6 +847,19 @@ dependencies = [
 ]
 
 [[package]]
+name = "dashmap"
+version = "5.5.3"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "978747c1d849a7d2ee5e8adc0159961c48fb7e5db2f06af6723b80123bb53856"
+dependencies = [
+ "cfg-if",
+ "hashbrown",
+ "lock_api",
+ "once_cell",
+ "parking_lot_core",
+]
+
+[[package]]
 name = "deflate64"
 version = "0.1.8"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1826,11 +1839,13 @@ dependencies = [
  "chrono",
  "clap",
  "criterion",
+ "dashmap",
  "derive_more",
  "hex",
  "log",
  "ntrim-core",
  "ntrim-tools",
+ "once_cell",
  "pretty_env_logger",
  "rand 0.8.5",
  "reqwest",

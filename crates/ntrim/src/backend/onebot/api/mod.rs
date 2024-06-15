@@ -1,4 +1,5 @@
 pub(crate) mod account;
+pub(crate) mod message;
 
 use actix_web::http::StatusCode;
 use derive_more::Display;
@@ -64,6 +65,30 @@ pub enum OnebotError {
     LogicError(String),
     #[error("unsupported Content-Type error occurred: {0}")]
     UnsupportedContentTypeError(String),
+    #[error("illegal input: {0}")]
+    IllegalInputError(String),
+}
+
+impl OnebotError {
+    #[inline]
+    fn internal(str: &str) -> Self {
+        Self::InternalError(str.to_string())
+    }
+
+    #[inline]
+    fn logic(str: &str) -> Self {
+        Self::LogicError(str.to_string())
+    }
+
+    #[inline]
+    fn content_type_error(str: &str) -> Self {
+        Self::UnsupportedContentTypeError(str.to_string())
+    }
+
+    #[inline]
+    fn illegal_input(str: &str) -> Self {
+        Self::IllegalInputError(str.to_string())
+    }
 }
 
 impl actix_web::ResponseError for OnebotError {
@@ -73,6 +98,7 @@ impl actix_web::ResponseError for OnebotError {
             Self::InternalError(..) => StatusCode::INTERNAL_SERVER_ERROR,
             OnebotError::LogicError(..) => StatusCode::BAD_REQUEST,
             OnebotError::UnsupportedContentTypeError(..) => StatusCode::UNSUPPORTED_MEDIA_TYPE,
+            OnebotError::IllegalInputError(..) => StatusCode::BAD_REQUEST,
         }
     }
 

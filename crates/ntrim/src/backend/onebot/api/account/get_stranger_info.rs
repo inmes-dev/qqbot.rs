@@ -27,7 +27,7 @@ async fn handle_get_stranger_info(bot: &Arc<Bot>, params: GetStrangerInfoParams)
         OnebotError::InternalError(format!("Failed to handle_get_stranger_info: {}", e))
     )?;
     if summary_card.is_none() {
-        return Err(Error::from(OnebotError::LogicError("用户未找到或者未添加为好友".to_string())));
+        return Err(Error::from(OnebotError::logic("用户未找到或者未添加为好友")));
     }
     let summary_card = summary_card.unwrap();
     let nick_name = summary_card.nickname;

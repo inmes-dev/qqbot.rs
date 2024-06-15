@@ -24,7 +24,7 @@ async fn handle_get_account_info(bot: &Arc<Bot>, params: GetAccountInfoParams) -
     }, |e| {
         Err(e)
     }).map_err(|e|
-        OnebotError::InternalError(format!("Failed to get_profile_detail: {}", e))
+        OnebotError::internal(&format!("Failed to get_profile_detail: {}", e))
     )?;
     let nick_name = profile.map_or("unknown".to_string(), |p| p.nick_name);
 

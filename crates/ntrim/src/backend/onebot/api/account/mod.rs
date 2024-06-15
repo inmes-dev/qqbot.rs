@@ -7,6 +7,7 @@ mod get_group_info;
 mod get_group_list;
 mod get_group_member_list;
 mod get_group_member_info;
+mod send_like;
 
 use actix_web::{web};
 
@@ -22,5 +23,6 @@ pub fn init_routes(cfg: &mut web::ServiceConfig) {
             .configure(get_group_member_list::register)
             .configure(get_group_member_info::register)
             .configure(set_qq_profile::register)
+            .configure(send_like::register)
     );
 }

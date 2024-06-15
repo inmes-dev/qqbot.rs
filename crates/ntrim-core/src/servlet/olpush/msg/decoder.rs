@@ -52,20 +52,20 @@ pub(crate) async fn parse_elements(bot: &Arc<Bot>, record: &mut MessageRecord, e
                     let nick_len = buf.get_u16();
                     let is_at_all = buf.get_u8();
                     let uin = buf.get_u32() as u64;
-                    result.push(CQCode::Special(Box::new(At {
+                    result.push(CQCode::At(At {
                         qq: uin,
                         #[cfg(feature = "extend_cqcode")]
                         content: text.clone(),
-                    })))
+                    }))
                 } else {
                     result.push(CQCode::Text(text));
                 }
             }
 
             AioElem::Face(face) => {
-                result.push(CQCode::Special(Box::new(Face::new(
+                result.push(CQCode::Face(Face::new(
                     face.face_id
-                ))))
+                )))
             }
 
             AioElem::CustomFace(image) => {
@@ -77,11 +77,11 @@ pub(crate) async fn parse_elements(bot: &Arc<Bot>, record: &mut MessageRecord, e
                     Contact::Group(..) => format!("/gchatpic_new/0/0-0-{}/0?term=2", md5),
                     Contact::Friend(..) | Contact::Stranger(..) => format!("/offpic_new/0/0-0-{}/0?term=2", md5),
                 }.to_string()));
-                result.push(CQCode::Special(Box::new(Image::new(
+                result.push(CQCode::Image(Image::new(
                     image.file_path.map_or(md5 + ".png", |v| {
                         v.replace("{", "").replace("}", "").replace("-", "")
                     }), url, image.original != Some(0)
-                ))));
+                )))
             }
 
             AioElem::NotOnlineImage(image) => {
@@ -90,11 +90,11 @@ pub(crate) async fn parse_elements(bot: &Arc<Bot>, record: &mut MessageRecord, e
                     "https://c2cpicdw.qpic.cn{}",
                     image.orig_url.unwrap_or(format!("/offpic_new/0/0-0-{}/0?term=2", md5).to_string())
                 );
-                result.push(CQCode::Special(Box::new(Image::new(
+                result.push(CQCode::Image(Image::new(
                     image.file_path.map_or(md5 + ".jpg", |v| {
                         v.replace("{", "").replace("}", "").replace("-", "")
                     }), url, image.original.unwrap_or(false)
-                ))));
+                )))
             }
 
             AioElem::ArkJson(LightArk { data }) => {
@@ -107,16 +107,16 @@ pub(crate) async fn parse_elements(bot: &Arc<Bot>, record: &mut MessageRecord, e
 
                 } else if service_type == 33 { // 那种表情消息，扩展出来的
                     let comm_face = CommonFaceElem::decode(data).unwrap();
-                    result.push(CQCode::Special(Box::new(Face::new(
+                    result.push(CQCode::Face(Face::new(
                         comm_face.face_id
-                    ))));
+                    )))
                 } else if service_type == 37 { // 那种大的表情消息
                     single_element = true;
                     result.clear();
                     let big_face = CommonBigFaceElem::decode(data).unwrap();
-                    result.push(CQCode::Special(Box::new(Face::new_big_face(
+                    result.push(CQCode::Face(Face::new_big_face(
                         big_face.face_id
-                    ))));
+                    )))
                 } else if service_type == 48 { // 新版本专属的图片推送
                     let msg_info = MsgInfo::decode(data).unwrap();
                     parse_comm_elem_48(bot, result, business_type.unwrap(), msg_info).await;
@@ -148,9 +148,9 @@ pub async fn parse_comm_elem_48(bot: &Arc<Bot>, result: &mut Vec<CQCode>, busine
                 );
             if let Ok(Some(rkey)) = rkey {
                 let url = format!("https://{}{}&spec=0{}", domain, url_path, rkey.key);
-                result.push(CQCode::Special(Box::new(Image::with_sub_type(
+                result.push(CQCode::Image(Image::with_sub_type(
                     file_info.file_name.clone(), url, sub_type
-                ))));
+                )))
             } else {
                 warn!("Failed to get download rkey for picture: {:?}", rkey);
             }

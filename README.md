@@ -16,6 +16,7 @@
 > 如有违反法律，请联系删除。 请勿在任何平台宣传，宣扬，转发本项目，请勿恶意修改企业安装包造成相关企业产生损失，如有违背，必将追责到底。 
 > 请勿用于商业用途，如有违反，后果自负。
 > 
+> [Discord社区](https://discord.gg/hxVSNUsV)
 
 <!-- markdown-toc start - Don't edit this section. Run M-x markdown-toc-refresh-toc -->
 

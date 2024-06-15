@@ -1,6 +1,9 @@
+use std::collections::HashMap;
 use std::fmt::{Display, Formatter};
-use crate::cqp::{encode_cq_code_param, SpecialCQCode};
+use anyhow::{anyhow, Error};
+use crate::cqp::{encode_cq_code_param};
 
+#[derive(Debug, Clone, Default)]
 pub struct Image {
     pub file: String,
     pub url: String,
@@ -38,8 +41,17 @@ impl Display for Image {
     }
 }
 
-impl SpecialCQCode for Image {
-    fn get_type(&self) -> String {
-        "image".to_string()
+impl Image {
+    pub(crate) fn from(params: &HashMap<String, String>) -> Result<Self, Error> {
+        let file = params.get("file").ok_or(anyhow!("Image 缺少 'file' 参数"))?;
+        let url = params.get("url").ok_or(anyhow!("Image 缺少 'url' 参数"))?;
+        let r#type = params.get("type").ok_or(anyhow!("Image 缺少 'type' 参数"))?;
+        let sub_type = params.get("subType").map(|s| s.parse::<u32>().unwrap_or(0)).unwrap_or(0);
+        Ok(Image {
+            file: file.to_string(),
+            url: url.to_string(),
+            r#type: r#type.to_string(),
+            sub_type
+        })
     }
 }

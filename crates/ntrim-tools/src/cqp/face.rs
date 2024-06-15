@@ -1,6 +1,8 @@
+use std::collections::HashMap;
 use std::fmt::{Display, Formatter};
-use crate::cqp::SpecialCQCode;
+use anyhow::{anyhow, Error};
 
+#[derive(Debug, Clone, Default)]
 pub struct Face {
     pub id: u32,
     pub big: bool,
@@ -39,8 +41,15 @@ impl Display for Face {
     }
 }
 
-impl SpecialCQCode for Face {
-    fn get_type(&self) -> String {
-        "face".to_string()
+impl Face {
+    pub(crate) fn from(params: &HashMap<String, String>) -> Result<Self, Error> {
+        let id = params.get("id").ok_or(anyhow!("Face 缺少 'id' 参数"))?.parse::<u32>()?;
+        let big = params.get("big").map(|s| s.parse::<u32>().unwrap_or(0)).unwrap_or(0) == 1;
+        let result = params.get("result").map(|s| s.parse::<u32>().unwrap_or(0)).unwrap_or(0);
+        Ok(Face {
+            id,
+            big,
+            result
+        })
     }
 }

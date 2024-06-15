@@ -26,7 +26,7 @@ async fn handle_get_qq_profile(bot: &Arc<Bot>, params: GetQQProfileParams) -> ac
         OnebotError::InternalError(format!("Failed to handle_get_qq_profile: {}", e))
     )?;
     if profile.is_none() {
-        return Err(Error::from(OnebotError::LogicError("User not found".to_string())));
+        return Err(Error::from(OnebotError::logic("User not found")));
     }
     Ok(profile.unwrap())
 }

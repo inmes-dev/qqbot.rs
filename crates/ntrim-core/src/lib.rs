@@ -13,6 +13,9 @@ pub(crate) mod reconnect;
 pub(crate) mod jce;
 
 
+pub use servlet::olpush::msg::Contact;
+pub use servlet::olpush::msg::MessageRecord;
+
 #[cfg(feature = "sql")]
 pub mod db;
 #[cfg(feature = "sql")]

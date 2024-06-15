@@ -9,6 +9,7 @@ pub(super) async fn start(bot: Arc<Bot>, host: String, port: u16) -> Result<(), 
         App::new()
             .app_data(web::Data::new(bot.clone()))
             .configure(api::account::init_routes)
+            .configure(api::message::init_routes)
     })
         .bind((host, port))?
         .run()

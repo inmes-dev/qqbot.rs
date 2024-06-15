@@ -43,11 +43,26 @@ IS_NT_IPV6=1 ./ntrim
 
 #### 使用质押会话模式操作
 
-该模式提供一上线就自动刷新会话的操作：
+该模式提供一上线就自动刷新会话的操作，`-i`(`--immediate-refresh`)为**true**的时立即刷新：
 
 ```shell
 .\ntrim.exe -c [配置文件路径] session -s [质押会话路径] -i true
 ```
+
+# 缓存及安全策略
+
+| 参数名            | 说明                                                      | 默认值          |
+|----------------|---------------------------------------------------------|--------------|
+| ENABLE_VOTE    | 是否允许发送点赞包                                               | 1            |
+| UID_CACHE_MODE | UID缓存模式(`REVALIDATE`: 需要时缓存, `FULL`: 全量缓存, `NONE`: 不缓存) | `REVALIDATE` |
+
+### UID_CACHE_MODE
+
+- `UID_CACHE_MODE` 为`REVALIDATE`时，会在需要时缓存UID，以避免不必要的缓存。
+- `UID_CACHE_MODE` 为`FULL`时，会全量缓存UID，缓存好友列表所有的UID。
+- `UID_CACHE_MODE` 为`NONE`时，不会缓存UID，每次都从**数据库获取**或者**发包获取**。
+
+> 如果开启了数据库功能，建议设置为`NONE`避免额外内存开销。
 
 # OneBot环境变量
 

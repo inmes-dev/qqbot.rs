@@ -91,4 +91,8 @@ pub mod friendlist {
     pub mod get_multi_group_info {
         include!("friendlist.get_multi_group_info.rs");
     }
+
+    pub mod visitor_svc {
+        include!("visitor_svc.req_favourite.rs");
+    }
 }
