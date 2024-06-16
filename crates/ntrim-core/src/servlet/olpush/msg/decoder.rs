@@ -3,7 +3,7 @@ use std::sync::Arc;
 use bytes::{Buf, Bytes};
 use log::warn;
 use prost::Message;
-use ntrim_tools::cqp::{At, Face, Image};
+use ntrim_tools::cqp::{At, Face, Image, Reply};
 pub use ntrim_tools::cqp::CQCode;
 use crate::bot::Bot;
 use crate::pb::msg::elem::AioElem;
@@ -14,6 +14,7 @@ use crate::servlet::olpush::msg::{Contact, MessageRecord};
 
 pub(crate) async fn parse_elements(bot: &Arc<Bot>, record: &mut MessageRecord, elems: Vec<Elem>) {
     let mut single_element = false;
+    let mut is_front_reply = 0; // 跳过下一条艾特消息，因为这个破消息是为了兼容不支持回复的客户端实现的！
     let result = &mut record.elements;
     for elem in elems {
         if elem.aio_elem.is_none() {
@@ -46,6 +47,10 @@ pub(crate) async fn parse_elements(bot: &Arc<Bot>, record: &mut MessageRecord, e
             AioElem::Text(Text { text, attr_6, .. }) => {
                 // attr_6是一个Option<Bytes>，如果有值，那么就是一个At，否则就是一个普通的文本消息
                 if attr_6.is_some() {
+                    if is_front_reply == 2 {
+                        is_front_reply -= 1;
+                        continue;
+                    }
                     let mut buf = Bytes::from(attr_6.unwrap());
                     let size = buf.get_u16();
                     let pos = buf.get_u16();
@@ -58,6 +63,10 @@ pub(crate) async fn parse_elements(bot: &Arc<Bot>, record: &mut MessageRecord, e
                         content: text.clone(),
                     }))
                 } else {
+                    if is_front_reply == 1 && text == " " {
+                        is_front_reply -= 1;
+                        continue;
+                    }
                     result.push(CQCode::Text(text));
                 }
             }
@@ -97,6 +106,13 @@ pub(crate) async fn parse_elements(bot: &Arc<Bot>, record: &mut MessageRecord, e
                 )))
             }
 
+            AioElem::SrcMsg(src_msg) => {
+                result.push(CQCode::Reply(Reply {
+                    id: src_msg.orginal_seqs[0],
+                }));
+                is_front_reply = 2;
+            }
+
             AioElem::ArkJson(LightArk { data }) => {
                 warn!("Unsupported ArkJson")
             }
@@ -124,7 +140,7 @@ pub(crate) async fn parse_elements(bot: &Arc<Bot>, record: &mut MessageRecord, e
                     warn!("Unsupported CommonElem: {}", service_type)
                 }
             }
-            _ => warn!("Unsupported elem found, skip this!")
+            _ => warn!("Unsupported comm_elem found, skip this!")
         }
     }
 }

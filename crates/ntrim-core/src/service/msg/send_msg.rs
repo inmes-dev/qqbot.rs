@@ -10,8 +10,8 @@ use crate::servlet::olpush::msg::Contact;
 
 impl Bot {
     pub async fn send_msg(self: &Arc<Bot>, contact: Contact, msg: Vec<CQCode>) -> anyhow::Result<u64> {
+        let rich_text = convert_cq_to_msg(&contact, msg);
         let routing_head = convert_contact_to_routing_head(contact);
-        let rich_text = convert_cq_to_msg(msg);
 
         let result = await_response!(tokio::time::Duration::from_secs(600), async {
             let receiver = Bot::send_raw_msg(self, routing_head, rich_text).await;

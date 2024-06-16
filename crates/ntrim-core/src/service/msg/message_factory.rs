@@ -2,9 +2,10 @@ use anyhow::{anyhow, Error};
 use log::warn;
 use prost::Message as _;
 use ntrim_tools::cqp::CQCode;
+use crate::Contact;
 use crate::pb::msg::{ * };
 
-pub(crate) fn convert_cq_to_msg(cqs: Vec<CQCode>) -> RichText {
+pub(crate) fn convert_cq_to_msg(contact: &Contact, cqs: Vec<CQCode>) -> RichText {
     let mut elems = vec![
         Elem {
             aio_elem: Some(elem::AioElem::GeneralFlags(
@@ -42,7 +43,7 @@ pub(crate) fn convert_cq_to_msg(cqs: Vec<CQCode>) -> RichText {
     ];
 
     for cq in cqs {
-        match convert_cq_to_elem(cq) {
+        match convert_cq_to_elem(contact, cq) {
             Ok(elem) => elems.push(elem),
             Err(e) => {
                 warn!("Failed to convert CQCode to Elem: {}", e);
@@ -56,20 +57,21 @@ pub(crate) fn convert_cq_to_msg(cqs: Vec<CQCode>) -> RichText {
     }
 }
 
-fn convert_cq_to_elem(cq: CQCode) -> Result<Elem, Error> {
+fn convert_cq_to_elem(contact: &Contact, cq: CQCode) -> Result<Elem, Error> {
     Ok(match cq {
-        CQCode::Text(text) => {
-            Elem {
-                aio_elem: Some(elem::AioElem::Text(
-                    Text {
-                        text: text.to_string(),
-                        ..Default::default()
-                    }
-                ))
-            }
+        CQCode::Text(text) => Elem {
+            aio_elem: Some(elem::AioElem::Text(
+                Text {
+                    text: text.to_string(),
+                    ..Default::default()
+                }
+            ))
         },
+/*        CQCode::At(at) => {
+
+        }*/
         _ => return Err(anyhow!("Unsupported CQCode: {}", cq.to_string()))
-/*        CQCode::At(_) => {}
+/*
         CQCode::Face(_) => {}
         CQCode::Image(_) => {}
         CQCode::BubbleFace(_) => {}

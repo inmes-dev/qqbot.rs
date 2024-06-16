@@ -12,9 +12,19 @@ message Elem {
     ElemFlags2 flags2 = 9;
     ExtraData extra = 16;
     GeneralFlags general_flags = 37;
+    SrcMsg src_msg = 45;
     LightArk ark_json = 51;
     CommonElem common_elem = 53;
   };
+}
+
+message SrcMsg {
+  repeated int64 orginal_seqs = 1;
+  optional PbReverse pb_reverse = 8;
+
+  message PbReverse {
+    optional int64 msg_uid = 3;
+  }
 }
 
 message Face {
