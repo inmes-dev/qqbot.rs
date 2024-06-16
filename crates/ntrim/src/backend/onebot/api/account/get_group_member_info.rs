@@ -50,27 +50,8 @@ fn encode_group_info(info: GroupMemberInfo) -> Value {
 }
 
 async fn handle_get_group_member_info(bot: &Arc<Bot>, params: GetGroupMemberInfoParams) -> actix_web::Result<impl serde::Serialize> {
-    #[cfg(feature = "sql")]
-    if db::is_initialized() && !params.refresh.unwrap_or(false) {
-        let pool = PG_POOL.get().unwrap();
-        let group_member_info = GroupMemberInfo::query_member(pool, params.group_id, params.user_id).await
-            .map_err(|e| OnebotError::InternalError(format!("Fetch group_member_info from sql failed: {}", e)))?;
-        return Ok(encode_group_info(group_member_info))
-    }
-    let info = await_response!(tokio::time::Duration::from_secs(5), async {
-        let rx = Bot::get_group_member_card_info(bot, params.group_id, params.user_id).await;
-        if let Some(rx) = rx {
-            rx.await.map_err(|e| anyhow::Error::from(e))
-        } else {
-            Err(anyhow::Error::msg("Unable to handle_get_group_member_info: tcp connection exception"))
-        }
-    }, |value| {
-        Ok(value)
-    }, |e| {
-        Err(e)
-    }).map_err(|e|
-        OnebotError::InternalError(format!("Failed to handle_get_group_member_info: {}", e))
-    )?.ok_or(OnebotError::internal("Get group member info is null"))?;
+    let info = Bot::get_troop_member_card_info(bot, params.group_id, params.user_id, params.refresh).await
+        .map_err(|e| OnebotError::InternalError(format!("Failed to get troop member card info: {}", e)))?;
     Ok(encode_group_info(info))
 }
 

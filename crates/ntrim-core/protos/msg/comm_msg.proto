@@ -5,7 +5,7 @@ package msg;
 import "msg/comm_elem.proto";
 
 message OlpushRoutingHead {
-  required uint64 peer_id = 1;
+  required int64 peer_id = 1;
   optional string peer_uid = 2;
   optional uint32 platform = 3;
   optional uint32 from_app_id = 4;
@@ -17,14 +17,14 @@ message OlpushRoutingHead {
 
 message ContentHead {
   required uint32 msg_type = 1;
-  required uint64 msg_id = 4;
-  required uint64 msg_seq = 5;
-  required uint64 msg_time = 6;
-  required uint64 msg_uid = 12;
+  required int64 msg_id = 4;
+  required int64 msg_seq = 5;
+  required int64 msg_time = 6;
+  required int64 msg_uid = 12;
 }
 
 message Grp {
-  required uint64 group_id = 1;
+  required int64 group_id = 1;
   optional string sender_nick = 4;
   optional string group_name = 7;
 }

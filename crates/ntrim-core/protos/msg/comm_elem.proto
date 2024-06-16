@@ -86,22 +86,14 @@ message ElemFlags2 {
 message Text {
   required string text = 1;
   optional bytes attr_6 = 3;
-
-  //optional TextReversed reversed = 12;
+  optional TextReversed reversed = 12;
 
   message TextReversed {
-    optional uint64 target_uin = 4;
-    optional uint64 target_uid = 9;
-
-    oneof desc {
-      Link link = 14;
-    }
-
-    message Link {
-      required string title = 1;
-      required string description = 2;
-      required string icon = 3;
-    }
+    optional uint32 type = 1; // 1 all 2 specific
+    optional int64 target_uin = 4;
+    optional uint32 flag = 5;
+    optional string target_uid = 9; // all -> 0
+    optional uint32 busi_type = 11;
   }
 }
 

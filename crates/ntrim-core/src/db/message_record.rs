@@ -107,7 +107,7 @@ impl MessageRecord {
             .await?;
 
         let name = row.get("contact_name");
-        let id = row.get::<i64, _>("contact_uin") as u64;
+        let id = row.get::<i64, _>("contact_uin");
         let uid = row.try_get("contact_uid").unwrap_or("".to_string());
 
         let contact = match row.get::<String, _>("contact_type").as_str() {
@@ -119,13 +119,13 @@ impl MessageRecord {
 
         let mut record = MessageRecord {
             contact,
-            sender_id: row.get::<i64, _>("sender_id") as u64,
+            sender_id: row.get::<i64, _>("sender_id"),
             sender_uid: row.get("sender_uid"),
             sender_nick: row.get("sender_nick"),
             sender_unique_title: row.get("sender_unique_title"),
             msg_time: row.get("msg_time"),
-            msg_seq: row.get::<i64, _>("msg_seq") as u64,
-            msg_uid: row.get::<i64, _>("msg_uid") as u64,
+            msg_seq: row.get::<i64, _>("msg_seq"),
+            msg_uid: row.get::<i64, _>("msg_uid"),
             elements: Vec::new(), // assuming elements is a JSON array, handle deserialization properly
         };
         let rich_text: Vec<u8> = from_slice(&row.get::<Vec<u8>, _>("elements")).unwrap_or_default();

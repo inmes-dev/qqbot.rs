@@ -3,20 +3,20 @@ use ntrim_tools::cqp::CQCode;
 
 pub enum Contact {
     //        name   uin   uid
-    Group(   String, u64),
-    Friend(  String, u64, String),
-    Stranger(String, u64, String),
+    Group(   String, i64),
+    Friend(  String, i64, String),
+    Stranger(String, i64, String),
 }
 
 pub struct MessageRecord {
     pub contact: Contact,
-    pub sender_id: u64,
+    pub sender_id: i64,
     pub sender_uid: String,
     pub sender_nick: String,
     pub sender_unique_title: String,
     pub msg_time: i64,
-    pub msg_seq: u64,
-    pub msg_uid: u64,
+    pub msg_seq: i64,
+    pub msg_uid: i64,
     pub elements: Vec<CQCode>,
 }
 

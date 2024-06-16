@@ -10,7 +10,7 @@ use crate::pb::im::honor::GroupUserCardHonor;
 
 struct GetTroopMemberCardInfoCodec;
 
-#[command("group_member_card.get_group_member_card_info", "get_group_member_card_info", Service, Protobuf)]
+#[command("group_member_card.get_group_member_card_info", "_get_group_member_card_info", Service, Protobuf)]
 impl GetTroopMemberCardInfoCodec {
     async fn generate(bot: &Arc<Bot>, group_code: i64, target: i64) -> Option<Vec<u8>> {
         Some(GroupMemberReqBody {

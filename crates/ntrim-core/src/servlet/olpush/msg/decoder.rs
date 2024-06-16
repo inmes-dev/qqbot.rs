@@ -56,7 +56,7 @@ pub(crate) async fn parse_elements(bot: &Arc<Bot>, record: &mut MessageRecord, e
                     let pos = buf.get_u16();
                     let nick_len = buf.get_u16();
                     let is_at_all = buf.get_u8();
-                    let uin = buf.get_u32() as u64;
+                    let uin = buf.get_u32() as i64;
                     result.push(CQCode::At(At {
                         qq: uin,
                         #[cfg(feature = "extend_cqcode")]

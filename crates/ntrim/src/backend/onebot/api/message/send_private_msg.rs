@@ -3,7 +3,7 @@ use serde_derive::Deserialize;
 use serde_json::{json, Value};
 use ntrim_core::bot::Bot;
 use ntrim_core::Contact;
-use ntrim_tools::cqp::{parse_cq, parse_single_segment};
+use ntrim_tools::cqp::{CQCode, parse_cq, parse_single_segment};
 use ntrim_tools::cqp::parse_segments;
 use crate::backend::UID_UIN_MAP;
 use crate::init_route;
@@ -27,10 +27,16 @@ async fn handle_send_private_msg(bot: &Arc<Bot>, params: SendPrivateMessageParam
         Value::Number(_) => {
             return Err(Error::from(OnebotError::internal("Boolean value received. Please provide an array or object or string.")))
         }
-        Value::String(cq) => parse_cq(cq.as_bytes()),
+        Value::String(cq) => if params.auto_escape.unwrap_or(false) {
+            Ok(vec![CQCode::Text(cq)])
+        } else {
+            parse_cq(cq.as_bytes())
+        },
         Value::Array(..) => parse_segments(params.message),
         Value::Object(..) => parse_single_segment(params.message).map(|scq| vec![scq])
     }.map_err(|e| OnebotError::InternalError(format!("Failed to parse message: {}", e)))?;
+
+
     let uid = if UID_UIN_MAP.get(&params.user_id).is_none() {
         let friend_list = Bot::get_friend_list(&bot, false).await
             .map_err(|e| OnebotError::InternalError(
