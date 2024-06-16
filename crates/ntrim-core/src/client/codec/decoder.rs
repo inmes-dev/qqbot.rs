@@ -3,7 +3,6 @@ use anyhow::Error;
 use bytes::{Buf, BytesMut};
 use log::{debug, info, warn};
 use tokio::io::AsyncReadExt;
-use tokio::sync::RwLockReadGuard;
 use ntrim_tools::bytes::{BytePacketReader, PacketFlag};
 use ntrim_tools::crypto::qqtea::qqtea_decrypt;
 use ntrim_tools::flate2::decompress_deflate;

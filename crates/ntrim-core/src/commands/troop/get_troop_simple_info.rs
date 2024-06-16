@@ -3,8 +3,8 @@ use anyhow::Error;
 use bytes::{Buf, Bytes};
 use jcers::JcePut;
 use ntrim_macros::command;
-use crate::{await_response, db, jce};
-use crate::db::PG_POOL;
+use crate::{*};
+use crate::commands::troop::GroupInfo;
 use crate::jce::{next_request_id, pack_uni_request_data};
 use crate::jce::friendlist::get_multi_group_info::{TroopInfoV2, TroopMultiInfoRequest};
 
@@ -40,7 +40,7 @@ impl GetTroopMultiInfoCodec {
         Some(pkt.freeze().to_vec())
     }
 
-    async fn parse(bot: &Arc<Bot>, data: Vec<u8>) -> Option<Vec<crate::db::GroupInfo>> {
+    async fn parse(bot: &Arc<Bot>, data: Vec<u8>) -> Option<Vec<GroupInfo>> {
         let mut payload = Bytes::from(data);
         let mut request: Result<jce::RequestPacket, _> = jcers::from_buf(&mut payload).map_err(Error::from);
         if request.is_err() {
@@ -73,7 +73,7 @@ impl GetTroopMultiInfoCodec {
         let groups = groups.unwrap();
         let l = groups
             .into_iter()
-            .map(|g| crate::db::GroupInfo {
+            .map(|g| GroupInfo {
                 uin: g.group_uin,
                 code: g.group_code,
                 name: g.group_name,

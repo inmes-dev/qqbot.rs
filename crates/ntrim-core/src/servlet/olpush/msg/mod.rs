@@ -61,14 +61,14 @@ pub(super) async fn on_group_msg(bot: Arc<Bot>, msg: Message) {
 
     /*let raw_msg = record.elements.iter().map(|x| x.to_string()).collect::<Vec<String>>().join("");
     if raw_msg == "ping" {
-        let contact = crate::pb::msg::send_msg_req::RoutingHead {
+        let friend = crate::pb::msg::send_msg_req::RoutingHead {
             c2c: None,
             grp: Some(Grp {
                 group_id,
                 ..Default::default()
             }),
         };
-        Bot::send_msg(&bot, contact, crate::pb::msg::RichText {
+        Bot::send_msg(&bot, friend, crate::pb::msg::RichText {
             attr: None,
             elems: vec![
 

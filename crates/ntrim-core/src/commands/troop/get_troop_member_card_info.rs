@@ -1,11 +1,9 @@
-
 // group_member_card.get_group_member_card_info
 
-use log::info;
 use prost::Message;
 use ntrim_macros::command;
 use crate::commands::troop::GroupMemberPermission;
-use crate::db::GroupInfo;
+use crate::commands::troop::GroupInfo;
 use crate::pb;
 use crate::pb::get_group_member_card_info::{ * };
 use crate::pb::im::honor::GroupUserCardHonor;
@@ -24,7 +22,7 @@ impl GetTroopMemberCardInfoCodec {
         }.encode_to_vec())
     }
 
-    async fn parse(bot: &Arc<Bot>, data: Vec<u8>) -> Option<crate::db::GroupMemberInfo> {
+    async fn parse(bot: &Arc<Bot>, data: Vec<u8>) -> Option<crate::commands::troop::GroupMemberInfo> {
         let info = GroupMemberRspBody::decode(data.as_slice()).ok()?;
         let mem_info = info.mem_info?;
         let honor = GroupUserCardHonor::decode(mem_info.honor.as_bytes()).map_or(vec![], |value| {
@@ -36,7 +34,7 @@ impl GetTroopMemberCardInfoCodec {
         let area = unsafe { String::from_utf8_unchecked(mem_info.location) };
         let title = unsafe { String::from_utf8_unchecked(mem_info.special_title) };
 
-        Some(crate::db::GroupMemberInfo {
+        Some(crate::commands::troop::GroupMemberInfo {
             uin: mem_info.uin,
             gender: match mem_info.sex {
                 255 => -1,

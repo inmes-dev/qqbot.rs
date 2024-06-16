@@ -1,5 +1,4 @@
 use std::sync::Arc;
-use bytes::{Bytes, BytesMut};
 use serde_derive::Deserialize;
 use serde_json::json;
 use ntrim_core::bot::Bot;

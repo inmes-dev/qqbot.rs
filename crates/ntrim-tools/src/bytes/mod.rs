@@ -2,7 +2,6 @@ mod builder;
 mod reader;
 
 use bitflags::bitflags;
-use bytes::{Buf, BufMut};
 pub use builder::BytePacketBuilder;
 pub use reader::BytePacketReader;
 

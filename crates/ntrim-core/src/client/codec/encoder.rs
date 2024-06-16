@@ -1,7 +1,6 @@
-use std::ops::Deref;
 use std::sync::{Arc, OnceLock};
 use bytes::{BufMut, BytesMut};
-use log::{debug, error, info, warn};
+use log::{*};
 use prost::Message;
 use tokio::sync::mpsc::Receiver;
 use tokio::sync::RwLockReadGuard;
@@ -9,11 +8,9 @@ use ntrim_tools::bytes::{BytePacketBuilder, PacketFlag};
 use ntrim_tools::crypto::qqtea::qqtea_encrypt;
 
 use crate::client::codec::CodecError;
-use crate::client::packet::packet::CommandType::Heartbeat;
-use crate::client::packet::packet::UniPacket;
 use crate::client::packet::to_service_msg::ToServiceMsg;
 use crate::client::qsecurity::QSecurityResult;
-use crate::client::trpc::{ClientError, TrpcClient};
+use crate::client::trpc::{TrpcClient};
 use crate::pb::qqsecurity::{QqSecurity, SsoMapEntry, SsoSecureInfo};
 use crate::session::SsoSession;
 
@@ -28,7 +25,7 @@ pub(crate) trait TrpcEncoder {
 
 impl TrpcEncoder for TrpcClient {
     fn init(self: &Arc<Self>, mut rx: Receiver<ToServiceMsg>) {
-        let mut trpc = Arc::clone(self);
+        let trpc = Arc::clone(self);
         tokio::spawn(async move {
             let session = trpc.session.clone();
             loop {

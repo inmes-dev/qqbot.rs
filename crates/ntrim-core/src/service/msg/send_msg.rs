@@ -3,9 +3,9 @@ use anyhow::anyhow;
 use ntrim_tools::cqp::CQCode;
 use crate::await_response;
 use crate::bot::Bot;
-use crate::commands::msg_svc::message_factory::convert_cq_to_msg;
 use crate::pb::msg::Grp;
 use crate::pb::msg::send_msg_req::{C2c, RoutingHead};
+use crate::service::msg::message_factory::convert_cq_to_msg;
 use crate::servlet::olpush::msg::Contact;
 
 impl Bot {

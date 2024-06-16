@@ -1,10 +1,8 @@
-use std::fmt::format;
 use std::time::UNIX_EPOCH;
 use bytes::{BufMut, BytesMut};
 use prost::Message;
 use ntrim_tools::bytes::{BytePacketBuilder, PacketFlag};
 use ntrim_tools::crypto::qqtea::qqtea_encrypt;
-use crate::commands::wtlogin;
 
 #[inline]
 fn tlv_builder(buf: &mut BytesMut, ver: u16, body: &dyn Fn(&mut BytesMut)) {
@@ -340,6 +338,7 @@ pub fn t52d(buf: &mut BytesMut, brand: &str, code: &str, os_ver: &str, android_i
     )
 }
 
+#[must_use]
 pub fn t533_data(buf: &mut BytesMut, data: &[u8]) {
     tlv_builder(buf, 0x533, &|w| {
             w.put_slice(data);

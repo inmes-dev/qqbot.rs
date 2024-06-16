@@ -1,5 +1,5 @@
 use std::sync::Arc;
-use actix_web::{App, HttpServer, ResponseError, web};
+use actix_web::{App, HttpServer, web};
 use anyhow::Error;
 use ntrim_core::bot::Bot;
 use crate::backend::onebot::api::account::{ * };

@@ -1,5 +1,5 @@
 use std::collections::HashMap;
-use anyhow::{anyhow, Error};
+use anyhow::{Error};
 
 #[derive(Debug, Default)]
 pub struct NewDice {
@@ -13,7 +13,7 @@ impl std::fmt::Display for NewDice {
 }
 
 impl NewDice {
-    pub(crate) fn from(params: &HashMap<String, String>) -> Result<Self, Error> {
+    pub(crate) fn from(_params: &HashMap<String, String>) -> Result<Self, Error> {
         Ok(NewDice {
             ..Default::default()
         })

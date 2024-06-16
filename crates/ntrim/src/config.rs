@@ -1,8 +1,6 @@
-use std::fs::{read_to_string, write};
-use std::future::Future;
+use std::fs::{read_to_string};
 use std::path::PathBuf;
 use serde_derive::{Deserialize, Serialize};
-use toml::Value;
 
 #[derive(Debug, Clone, Deserialize, Serialize)]
 pub struct Config {

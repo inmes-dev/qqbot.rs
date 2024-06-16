@@ -1,8 +1,6 @@
 use std::sync::Arc;
 use serde_derive::Deserialize;
 use serde_json::json;
-use tokio::sync::oneshot::Receiver;
-use ntrim_core::await_response;
 use ntrim_core::bot::Bot;
 use crate::init_route;
 

@@ -1,16 +1,11 @@
 use std::ops::Deref;
 use std::pin::Pin;
 use std::sync::Arc;
-use std::sync::atomic::Ordering::SeqCst;
 use anyhow::Error;
 use tokio::sync::mpsc;
-use tokio::sync::mpsc::Sender;
 use tokio::sync::mpsc::Receiver;
-use tokio::sync::oneshot::error::RecvError;
-use ntrim_core::bot::{Bot, BotStatus};
-use ntrim_core::{await_response, commands, service};
-use ntrim_core::commands::wtlogin::refresh_sig::RefreshSig;
-use ntrim_core::commands::wtlogin::wtlogin_request::{WtloginFactory, WtloginBuilder};
+use ntrim_core::bot::{Bot};
+use ntrim_core::{*};
 use ntrim_core::events::wtlogin_event::WtloginResponse;
 use crate::config::Config;
 use crate::login::session::register::save_session;
@@ -27,7 +22,7 @@ pub async fn token_login(session_path: String, config: &Config) -> (Arc<Bot>, Re
     }).unwrap();
     let result_bot = bot.clone();
 
-    let (mut tx, rx) = mpsc::channel(1);
+    let (tx, rx) = mpsc::channel(1);
     tokio::spawn(async move {
         //let resp_recv = Bot::registerNt(&bot).await.unwrap();
        let value =  await_response!(tokio::time::Duration::from_secs(15), async {

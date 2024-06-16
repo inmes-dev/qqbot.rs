@@ -7,22 +7,15 @@ mod backend;
 extern crate pretty_env_logger;
 #[macro_use] extern crate log;
 
-use std::sync::Arc;
-use std::sync::atomic::{AtomicBool, Ordering};
 use anyhow::Error;
-use bytes::{BufMut, BytesMut};
 use clap::Parser;
 use ntrim_core::await_response;
 use ntrim_core::bot::{Bot};
-use ntrim_core::client::qsecurity::QSecurity;
-use ntrim_core::commands::troop::GroupMemberInfo;
 use ntrim_core::events::wtlogin_event::WtloginResponse;
-use ntrim_core::session::SsoSession;
 use ntrim_tools::sigint;
 use crate::args::{Args, LoginMode};
 use crate::backend::{onebot, UID_UIN_MAP};
 use crate::login::session::token_login;
-use crate::qqsecurity::QSecurityViaHTTP;
 
 const WELCOME: &str = r#"
   _   _ _____ ____  ___ __  __
@@ -59,7 +52,7 @@ async fn main() {
     }
 
     let ((bot, mut result), immediate_refresh) = match args.login_mode {
-        LoginMode::Password { qq, password } => {
+        LoginMode::Password { .. } => {
             panic!("Password login is not supported yet")
         }
         LoginMode::Session { session_path, immediate_refresh } => {
@@ -91,7 +84,7 @@ async fn main() {
     #[cfg(feature = "sql")]
     if config.sql.enable && std::env::var("IMM_REFRESH_CACHE").map_or(true, |v| v == "1") {
         info!("数据库支持已开启，开始刷新群列表/群成员列表/好友列表！");
-        let mut start = std::time::Instant::now();
+        let start = std::time::Instant::now();
         let group_list = Bot::get_troop_list(&bot, true)
             .await.expect("Failed to get group list");
         info!("刷新群列表成功，共{}个群聊, 耗时: {:?}", group_list.len(), start.elapsed());

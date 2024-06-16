@@ -8,7 +8,6 @@ use crate::client::packet::{FromServiceMsg, ToServiceMsg};
 use crate::client::packet::packet::CommandType::{ExchangeSig, ExchangeSt, Register, Service};
 use crate::client::packet::packet::UniPacket;
 use crate::client::trpc::TrpcClient;
-use crate::commands;
 use crate::session::ticket::{SigType, TicketManager};
 
 impl TrpcClient {

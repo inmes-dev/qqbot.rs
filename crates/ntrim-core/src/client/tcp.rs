@@ -7,14 +7,10 @@ use bitflags::bitflags;
 use bytes::BytesMut;
 use log::{debug, error, info};
 use thiserror::Error;
-use tokio::io::{AsyncWriteExt, Interest};
+use tokio::io::{AsyncWriteExt};
 use tokio::net::tcp::{OwnedReadHalf, OwnedWriteHalf};
-use tokio::net::{TcpSocket, TcpStream};
-use tokio::sync::mpsc::Sender;
+use tokio::net::{TcpSocket};
 use tokio::sync::Mutex;
-use url::Host::Ipv4;
-use crate::client::packet::packet::UniPacket;
-use crate::session::SsoSession;
 
 const NT_V4_SERVER: &str = "msfwifi.3g.qq.com";
 const NT_V6_SERVER: &str = "msfwifiv6.3g.qq.com";
@@ -117,7 +113,7 @@ impl TcpClient {
         } else {
             TcpSocket::new_v6()
         }.unwrap();
-        let mut tcp_stream = match tcp.connect(self.addr.unwrap()).await {
+        let tcp_stream = match tcp.connect(self.addr.unwrap()).await {
             Ok(result) => result,
             Err(e) => {
                 error!("Failed to connect server: {}", e);
@@ -183,7 +179,7 @@ impl TcpClient {
         status.set(TcpStatus::Lost, true);
         self.status.store(status.bits(), SeqCst);
 
-        if let Some(mut tx) = self.channel.0.take() {
+        if let Some(tx) = self.channel.0.take() {
             let mut guard = tx.lock().await;
             let result = guard.shutdown().await;
             if let Err(e) = result {
@@ -204,7 +200,7 @@ impl TcpClient {
         status.set(TcpStatus::Lost, false);
         self.status.store(status.bits(), SeqCst);
 
-        if let Some(mut tx) = self.channel.0.take() {
+        if let Some(tx) = self.channel.0.take() {
             let mut guard = tx.lock().await;
             let result = guard.shutdown().await;
             if let Err(e) = result {

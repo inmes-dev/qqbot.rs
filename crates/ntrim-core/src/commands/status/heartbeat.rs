@@ -1,6 +1,4 @@
-use log::info;
 use ntrim_macros::command;
-use crate::pb::trpc::status::{SilenceState, SsoHeartBeatRequest, SsoHeartBeatResponse};
 
 struct HeartBeatCodec;
 

@@ -1,8 +1,6 @@
-use std::ops::Deref;
 use std::process::exit;
 use chrono::Local;
-use rand::{Rng, thread_rng};
-use rand::distributions::Alphanumeric;
+use rand::{thread_rng};
 use ntrim_core::session::device::Device;
 use ntrim_core::session::protocol::protocol;
 use ntrim_core::session::SsoSession;
@@ -21,11 +19,11 @@ fn rand_qimei() -> String {
     }).collect()
 }
 
-/// 保存克隆体
+// 保存克隆体
 pub fn save_session(path: &str, session: &SsoSession) {
     info!("Saving session to {}", path);
     let mut data = serde_json::Map::new();
-    /// 仿生环境保存
+    // 仿生环境保存
     data.insert("uin".to_string(), serde_json::Value::String(session.uin.to_string()));
     data.insert("uid".to_string(), serde_json::Value::String(session.uid.clone()));
     data.insert("ksid".to_string(), serde_json::Value::String(hex::encode(session.ksid)));
@@ -40,7 +38,7 @@ pub fn save_session(path: &str, session: &SsoSession) {
     data.insert("brand".to_string(), serde_json::Value::String(device.brand.to_string()));
     data.insert("vendor_os_name".to_string(), serde_json::Value::String(device.vendor_os_name.to_string()));
 
-    /// RNA冷冻保存
+    // RNA冷冻保存
     let mut ticket = serde_json::Map::new();
     for (id, t) in &session.tickets {
         let mut ticket_data = serde_json::Map::new();
@@ -57,7 +55,7 @@ pub fn save_session(path: &str, session: &SsoSession) {
     }
     data.insert("ticket".to_string(), serde_json::Value::Object(ticket));
 
-    /// 冷冻保存DNA
+    // 冷冻保存DNA
     let mut sigs = serde_json::Map::new();
     let en_a1 = [&session.encrypt_a1[..], &session.tgtgt_key[..]].concat();
     sigs.insert("en_a1".to_string(), serde_json::Value::String(hex::encode(en_a1)));
@@ -67,7 +65,7 @@ pub fn save_session(path: &str, session: &SsoSession) {
     sigs.insert("wt_session_create_time".to_string(), serde_json::Value::Number(serde_json::Number::from(session.wt_session_create_time)));
     data.insert("sigs".to_string(), serde_json::Value::Object(sigs));
 
-    /// 记录黑盒最后时间
+    // 记录黑盒最后时间
     data.insert("update_time".to_string(), serde_json::Value::String(Local::now().to_rfc3339()));
 
     let data = serde_json::Value::Object(data);
@@ -78,7 +76,7 @@ fn is_valid_en_a1(en_a1: &[u8]) -> bool {
     en_a1.iter().all(|&x| x >= 33 && x <= 126)
 }
 
-/// 载入克隆体
+// 载入克隆体
 pub fn load_session(path: &str) -> SsoSession {
     let current_sec_time = Local::now().timestamp();
     info!("Loading cache session from {}", path);
@@ -86,7 +84,7 @@ pub fn load_session(path: &str) -> SsoSession {
     let session_data: serde_json::Value = serde_json::from_str(&data).unwrap();
     let session_data = session_data.as_object().unwrap();
 
-    /// 仿生环境
+    // 仿生环境
     let uin = session_data["uin"].as_str().unwrap();
     info!("Loaded session for uin: {}", uin);
     let uid = session_data["uid"].as_str().unwrap();
@@ -121,7 +119,7 @@ pub fn load_session(path: &str) -> SsoSession {
         os_name.to_string()
     );
 
-    /// 遗传信息
+    // 遗传信息
     let protocol = protocol::qq_9_0_20();
     let mut sso_session = SsoSession::new(
         (uin.parse().unwrap(), uid.to_string()),
@@ -131,7 +129,7 @@ pub fn load_session(path: &str) -> SsoSession {
         guid.as_slice().try_into().unwrap()
     );
 
-    /// DNA的复制
+    // DNA的复制
     let sigs = session_data["sigs"].as_object().unwrap();
     let mut a1_with_tgtgt_key = hex::decode(sigs["en_a1"].as_str().unwrap()).unwrap();
     // 解码管家基因
@@ -155,8 +153,8 @@ pub fn load_session(path: &str) -> SsoSession {
         info!("WT session expire in {} seconds", 2592000 - wt_session_expire_time);
     }
 
-    /// RNA复制
-    /// WARN：该区域存在大量没有科学价值的RNA
+    // RNA复制
+    // WARN：该区域存在大量没有科学价值的RNA
     for (k, v) in ticket {
         let sig_type: u32 = k.parse().unwrap();
         let sig_type = SigType::from_bits(sig_type).unwrap();

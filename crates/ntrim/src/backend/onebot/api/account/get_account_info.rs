@@ -1,16 +1,14 @@
 use std::sync::Arc;
 use serde_derive::Deserialize;
-use tokio::sync::oneshot::Receiver;
 use ntrim_core::await_response;
 use ntrim_core::bot::Bot;
 use crate::init_route;
 
-#[derive(Deserialize, Debug)]
+#[derive(Deserialize)]
 struct GetAccountInfoParams {
-    debug: Option<bool>
 }
 
-async fn handle_get_account_info(bot: &Arc<Bot>, params: GetAccountInfoParams) -> actix_web::Result<impl serde::Serialize> {
+async fn handle_get_account_info(bot: &Arc<Bot>, _params: GetAccountInfoParams) -> actix_web::Result<impl serde::Serialize> {
     let user_id = bot.unique_id;
     let profile = await_response!(tokio::time::Duration::from_secs(5), async {
         let rx = Bot::get_profile_detail(bot, user_id).await;

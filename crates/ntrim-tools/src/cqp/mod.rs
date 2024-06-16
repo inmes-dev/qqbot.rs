@@ -42,7 +42,6 @@ pub use cq_parser::parse_cq;
 pub use segment_parser::parse_segments;
 pub use segment_parser::parse_single_segment;
 use std::fmt::Display;
-use prost::Message;
 
 
 pub enum CQCode {

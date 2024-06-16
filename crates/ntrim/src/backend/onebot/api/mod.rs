@@ -2,7 +2,6 @@ pub(crate) mod account;
 pub(crate) mod message;
 
 use actix_web::http::StatusCode;
-use derive_more::Display;
 use serde_derive::{Deserialize, Serialize};
 
 #[derive(Debug, Deserialize)]
@@ -23,17 +22,6 @@ pub struct OnebotResult {
 }
 
 impl OnebotResult {
-    pub fn new(status: String, retcode: i32, data: serde_json::Value, msg: String, wording: String, echo: serde_json::Value) -> OnebotResult {
-        OnebotResult {
-            status,
-            retcode,
-            data,
-            msg,
-            wording,
-            echo,
-        }
-    }
-
     pub fn success(data: serde_json::Value, echo: serde_json::Value) -> Self {
         OnebotResult {
             status: "ok".to_string(),
@@ -138,7 +126,11 @@ macro_rules! init_route {
                 }
             };
             let resp = $handler(bot, params).await?;
-            Ok(serde_json::to_string(&resp).unwrap())
+            let resp = serde_json::to_value(resp).unwrap();
+            let data = serde_json::to_string(
+                &crate::backend::onebot::api::OnebotResult::success(resp, serde_json::Value::Null)
+            ).unwrap();
+            Ok(data)
         }
 
         async fn handle_post(req: actix_web::HttpRequest, payload: web::Payload) -> impl Responder {
@@ -170,7 +162,11 @@ macro_rules! init_route {
             let bot = data.get_ref();
 
             let resp = $handler(bot, params).await?;
-            Ok(serde_json::to_string(&resp).unwrap())
+            let resp = serde_json::to_value(resp).unwrap();
+            let data = serde_json::to_string(
+                &crate::backend::onebot::api::OnebotResult::success(resp, serde_json::Value::Null)
+            ).unwrap();
+            Ok(data)
         }
 
         async fn handle_post_urlencoded(req: actix_web::HttpRequest, mut payload: web::Payload) -> actix_web::Result<String> {
@@ -191,7 +187,11 @@ macro_rules! init_route {
             };
 
             let resp = $handler(bot, params).await?;
-            Ok(serde_json::to_string(&resp).unwrap())
+            let resp = serde_json::to_value(resp).unwrap();
+            let data = serde_json::to_string(
+                &crate::backend::onebot::api::OnebotResult::success(resp, serde_json::Value::Null)
+            ).unwrap();
+            Ok(data)
         }
 
         cfg.service(web::scope($route)

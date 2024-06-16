@@ -7,12 +7,10 @@ mod friend_list;
 use std::sync::OnceLock;
 use sqlx::{Acquire, PgPool};
 use sqlx::postgres::PgPoolOptions;
-use ntrim_tools::tokiort::global_tokio_runtime;
-use crate::commands::friend::{FriendInfo, FriendListResponse};
-pub use crate::commands::troop::GroupInfo;
-pub use crate::commands::troop::GroupMemberInfo;
+use crate::commands::friend::{FriendListResponse};
+use crate::commands::troop::{GroupInfo, GroupMemberInfo};
 pub use crate::db::simple_record::SimpleMessageRecord;
-pub use crate::servlet::olpush::msg::MessageRecord;
+use crate::MessageRecord;
 
 pub static PG_POOL: OnceLock<PgPool> = OnceLock::new();
 

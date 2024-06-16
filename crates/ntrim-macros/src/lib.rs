@@ -3,24 +3,16 @@ mod servlet;
 
 use proc_macro::TokenStream;
 use proc_macro2::{Span, TokenStream as TokenStream2};
-use std::any::{Any, TypeId};
-use std::ops::Add;
 use std::collections::HashMap;
-use std::thread;
 use quote::{quote, ToTokens};
-use ::syn::{*,
-            parse::{Parse, ParseStream, Parser},
-            punctuated::Punctuated,
-            spanned::Spanned,
-            Result, // explicitly shadow Result
-};
+use ::syn::{*};
 use log::info;
 use crate::command::CommandType;
 
 
 #[proc_macro_attribute]
 pub fn command(attrs: TokenStream, item: TokenStream) -> TokenStream {
-    let mut impl_item = parse_macro_input!(item as ItemImpl);
+    let impl_item = parse_macro_input!(item as ItemImpl);
     let args = parse_macro_input!(attrs as command::CommandsArgs);
     let impl_items = &impl_item.items;
 
@@ -170,7 +162,7 @@ pub fn servlet(attrs: TokenStream, item: TokenStream) -> TokenStream {
     if fun_map.is_empty() {
         panic!("No function found in servlet");
     }
-    let fun_map = fun_map.iter().filter(|(k, f)| {
+    let fun_map = fun_map.into_iter().filter(|(_k, f)| {
         let input_args = f.sig.inputs.clone().iter().map(|arg| {
             match arg {
                 FnArg::Typed(pat) => {
@@ -182,7 +174,9 @@ pub fn servlet(attrs: TokenStream, item: TokenStream) -> TokenStream {
         }).collect::<TokenStream2>().to_string();
         let input_args = input_args.split(",").map(|s| s.to_string()).collect::<Vec<String>>();
         input_args.len() >= 2 && input_args[1].trim().ends_with("FromServiceMsg")
-    }).map(|(n, f)| f.clone()).collect::<Vec<&ImplItemFn>>();
+    }).map(|(_n, f)|
+        f.clone()
+    ).collect::<Vec<_>>();
 
     if fun_map.is_empty() {
         panic!("No function with FromServiceMsg input found in servlet");
@@ -190,7 +184,7 @@ pub fn servlet(attrs: TokenStream, item: TokenStream) -> TokenStream {
 
     let impl_name = impl_item.self_ty.to_token_stream().to_string();
     let impl_name = impl_name.split("::").last().unwrap();
-    let impl_name = Ident::new(impl_name, Span::call_site());
+    let _impl_name = Ident::new(impl_name, Span::call_site());
 
     let commands = args.cmds; // 转换为vec
     let commands = commands.iter().map(|cmd| {

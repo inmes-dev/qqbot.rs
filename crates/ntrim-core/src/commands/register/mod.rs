@@ -1,14 +1,9 @@
-pub(crate) mod heartbeat;
-
-use std::sync::atomic::Ordering::SeqCst;
-use anyhow::Error;
 use log::info;
 use prost::Message;
-use tokio::{self, runtime::Runtime, time::{self, Duration, Instant}};
+use tokio::{self};
 use ntrim_macros::command;
 use pb::trpc::register::{ * };
-use crate::bot::BotStatus;
-use crate::{await_response, pb};
+use crate::{pb};
 
 struct RegisterCodec;
 
@@ -16,7 +11,7 @@ struct RegisterCodec;
 impl RegisterCodec {
     async fn generate(bot: &Arc<Bot>) -> Option<Vec<u8>> {
         let session = bot.client.session.clone();
-        let mut session = session.write().await;
+        let session = session.write().await;
         info!("Generating register request for bot: {:?}", session.uid);
         //session.last_grp_msg_time = (current_time as u64) - (60 * 5);
 

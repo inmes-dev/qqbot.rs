@@ -8,7 +8,6 @@ use crate::commands::wtlogin::tlv::{*};
 use crate::commands::wtlogin::wtlogin_request::{WtloginFactory, WtloginBuilder};
 use crate::commands::wtlogin::WtloginRequest;
 use crate::session::SsoSession;
-use crate::session::ticket::{TicketManager};
 
 /// 转录F受体对应的DNA
 /// RNA翻译表达F受体

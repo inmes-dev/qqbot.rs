@@ -13,7 +13,7 @@ impl std::fmt::Display for NewRPS {
 }
 
 impl NewRPS {
-    pub(crate) fn from(params: &HashMap<String, String>) -> Result<Self, Error> {
+    pub(crate) fn from(_params: &HashMap<String, String>) -> Result<Self, Error> {
         Ok(NewRPS {
             ..Default::default()
         })

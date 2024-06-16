@@ -1,10 +1,11 @@
 use std::sync::Arc;
 use serde_derive::Deserialize;
 use serde_json::{json, Value};
-use ntrim_core::{await_response, db};
+use ntrim_core::{*};
 use ntrim_core::bot::Bot;
-use ntrim_core::commands::troop::GroupMemberPermission;
-use ntrim_core::db::{GroupMemberInfo, PG_POOL};
+use ntrim_core::commands::troop::{GroupMemberInfo, GroupMemberPermission};
+#[cfg(feature = "sql")]
+use ntrim_core::db::{PG_POOL};
 use crate::init_route;
 
 #[derive(Deserialize, Debug)]

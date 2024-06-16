@@ -74,6 +74,7 @@ impl QSecurity for QSecurityViaHTTP {
                 }
             };
             let response = response.text().await.map_err(|e| {
+                error!("Failed to ping sign server (0x1): {}", e);
                 return false;
             }).unwrap();
             let response: serde_json::Value = serde_json::from_str(&response).map_err(|e| {

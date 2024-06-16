@@ -8,10 +8,9 @@ pub mod wtlogin_request {
     use std::sync::Arc;
     use anyhow::Error;
     use bytes::{Buf, BufMut, Bytes, BytesMut};
-    use chrono::DateTime;
     use log::{error, info, warn};
     use tokio::sync::oneshot::{Receiver, Sender};
-    use ntrim_tools::bytes::{BytePacketBuilder, BytePacketReader, PacketFlag};
+    use ntrim_tools::bytes::{BytePacketBuilder, PacketFlag};
     use ntrim_tools::crypto::ecdh::ecdh_share_key;
     use ntrim_tools::crypto::qqtea::{qqtea_decrypt, qqtea_encrypt};
     use crate::client::packet::FromServiceMsg;
@@ -20,7 +19,7 @@ pub mod wtlogin_request {
     use crate::client::trpc::TrpcClient;
     use crate::events::wtlogin_event::WtloginResponse;
     use crate::session::SsoSession;
-    use crate::session::ticket::{SigType, Ticket, TicketManager};
+    use crate::session::ticket::{SigType, TicketManager};
 
     pub trait WtloginFactory<R: WtloginRequest> {
         type Params: ?Sized;

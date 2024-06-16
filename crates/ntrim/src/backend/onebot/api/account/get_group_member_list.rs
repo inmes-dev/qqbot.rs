@@ -4,7 +4,9 @@ use serde_json::{json, Value};
 use ntrim_core::await_response;
 use ntrim_core::bot::Bot;
 use ntrim_core::commands::troop::GroupMemberPermission;
-use ntrim_core::db::{group_list, GroupMemberInfo, PG_POOL};
+use ntrim_core::commands::troop::GroupMemberInfo;
+#[cfg(feature = "sql")]
+use ntrim_core::db::{PG_POOL};
 use crate::init_route;
 
 #[derive(Deserialize, Debug)]
