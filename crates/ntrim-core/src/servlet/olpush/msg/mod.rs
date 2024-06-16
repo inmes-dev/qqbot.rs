@@ -7,7 +7,7 @@ use chrono::{Local, NaiveDateTime};
 use log::warn;
 use prost::Message as ProstMessage;
 use crate::bot::Bot;
-use crate::pb::msg::{Grp, routing_head};
+use crate::pb::msg::{Grp, olpush_routing_head};
 use crate::pb::trpc::olpush::Message;
 pub use record::{ * };
 
@@ -19,7 +19,7 @@ pub(super) async fn on_group_msg(bot: Arc<Bot>, msg: Message) {
     let from_sub_appid = msg.routing_head.from_app_id;
     let platform = msg.routing_head.platform;
     let (group_id, sender_nick, group_name) = match msg.routing_head.contact {
-        Some(routing_head::Contact::Grp(grp)) => (
+        Some(olpush_routing_head::Contact::Grp(grp)) => (
             grp.group_id,
             grp.sender_nick.map_or_else(|| "".to_string(), |x| x),
             grp.group_name.map_or_else(|| "".to_string(), |x| x)
@@ -71,39 +71,7 @@ pub(super) async fn on_group_msg(bot: Arc<Bot>, msg: Message) {
         Bot::send_msg(&bot, contact, crate::pb::msg::RichText {
             attr: None,
             elems: vec![
-                crate::pb::msg::Elem {
-                    aio_elem: Some(crate::pb::msg::elem::AioElem::GeneralFlags(
-                        crate::pb::msg::GeneralFlags {
-                            bubble_diy_text_id: Some(0),
-                            bubble_sub_id: Some(0),
-                            pendant_id: Some(0),
-                            pb_reverse: Some(crate::pb::msg::general_flags::PbReverse {
-                                mobile_custom_font: Some(0),
-                                pendant_diy_id: Some(0),
-                                face_id: Some(0),
-                                diy_font_timestamp: Some(0),
-                                req_font_effect_id: Some(0),
-                                subfont_id: Some(0),
-                                vip_level: Some(0),
-                                vip_type: Some(0),
-                                user_bigclub_flag: Some(0),
-                                user_bigclub_level: Some(0),
-                                user_vip_info: Some(vec![]),
-                                nameplate: Some(0),
-                                nameplate_vip: Some(0),
-                                gray_nameplate: Some(0),
-                                unknown: Some(0),
-                            }.encode_to_vec())
-                        }
-                    ))
-                },
-                crate::pb::msg::Elem {
-                    aio_elem: Some(crate::pb::msg::elem::AioElem::Flags2(
-                        crate::pb::msg::ElemFlags2 {
-                            color_text_id: Some(0)
-                        }
-                    ))
-                },
+
                 crate::pb::msg::Elem {
                     aio_elem: Some(crate::pb::msg::elem::AioElem::Text(
                         crate::pb::msg::Text {

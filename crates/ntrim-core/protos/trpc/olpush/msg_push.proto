@@ -10,7 +10,7 @@ message MsgPush {
 }
 
 message Message {
-  required msg.RoutingHead routing_head = 1;
+  required msg.OlpushRoutingHead routing_head = 1;
   required msg.ContentHead content_head = 2;
   required msg.MessageBody msg_body = 3;
 }

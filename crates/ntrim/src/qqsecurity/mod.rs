@@ -138,7 +138,13 @@ impl QSecurity for QSecurityViaHTTP {
                 log::error!("Failed to get sign response text: {}", e);
                 return QSecurityResult::new_empty();
             }).unwrap();
-            let response: serde_json::Value = serde_json::from_str(&response).unwrap();
+            let response: serde_json::Value = match serde_json::from_str(&response) {
+                Ok(v) => v,
+                Err(e) => {
+                    log::error!("Failed to parse sign response: {}, err: {}", response, e);
+                    return QSecurityResult::new_empty();
+                }
+            };
             let ret = response["retcode"].as_u64().unwrap_or(1);
             if ret != 0 {
                 let msg = response["message"].as_str().unwrap_or_else(|| "Unknown error");

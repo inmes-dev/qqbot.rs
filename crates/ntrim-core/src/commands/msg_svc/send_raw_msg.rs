@@ -40,17 +40,18 @@ impl SendMsgCodec {
     }
 
     async fn parse(bot: &Arc<Bot>, data: Vec<u8>) -> Option<u64> {
+        //info!("Sent message successfully, seq: {}", hex::encode(&data));
         let data = Bytes::from(data);
         let send_msg = SendMsgRsp::decode(data.as_ref()).ok()?;
         if send_msg.result != 0 {
             error!("Failed to send message, code: {}", send_msg.result);
             return None;
         }
-        if send_msg.msg_seq.is_none() {
-            error!("Failed to send message, reason: account is under wind control");
-            return None;
-        }
-        return Some(send_msg.msg_seq.unwrap());
+        //if send_msg.msg_seq.is_none() {
+        //    error!("Failed to send message, reason: account is under wind control");
+        //    return None;
+        //}
+        return Some(send_msg.msg_seq.unwrap_or(0));
     }
 }
 

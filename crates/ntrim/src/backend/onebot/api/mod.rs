@@ -123,7 +123,7 @@ macro_rules! init_route {
         use tokio_stream::StreamExt;
         use actix_web::{Error, Responder, web};
 
-        pub(super) fn register(cfg: &mut web::ServiceConfig) {
+        pub fn register(cfg: &mut web::ServiceConfig) {
         type Params = $struct_name;
 
         async fn handle_get(req: actix_web::HttpRequest) -> actix_web::Result<String> {

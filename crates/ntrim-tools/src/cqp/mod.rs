@@ -39,6 +39,8 @@ pub use crate::cqp::gift::Gift;
 pub use crate::cqp::custom_music::CustomMusic;
 
 pub use cq_parser::parse_cq;
+pub use segment_parser::parse_segments;
+pub use segment_parser::parse_single_segment;
 use std::fmt::Display;
 use prost::Message;
 

@@ -4,7 +4,7 @@ package msg;
 
 import "msg/comm_elem.proto";
 
-message RoutingHead {
+message OlpushRoutingHead {
   required uint64 peer_id = 1;
   optional string peer_uid = 2;
   optional uint32 platform = 3;
