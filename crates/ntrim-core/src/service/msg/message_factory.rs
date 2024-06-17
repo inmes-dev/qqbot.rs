@@ -1,5 +1,6 @@
 use std::sync::Arc;
 use anyhow::{anyhow, Error};
+use bytes::BufMut;
 use log::warn;
 use prost::Message as _;
 use ntrim_tools::cqp::CQCode;
@@ -75,17 +76,37 @@ async fn convert_cq_to_elem(bot: &Arc<Bot>, contact: &Contact, cq: CQCode) -> Re
                 Contact::Group(_, gid) => get_group_member_info(bot, *gid, at.qq).await,
                 _ => return Err(anyhow!("Unsupported AT: {}", at))
             }?;
+            let enable_nt_at = option_env!("ENABLE_NT_AT").map_or(false, |v| v == "1");
+            let reversed = if enable_nt_at {
+                Some(TextReversed {
+                    r#type: Some(if at.qq == 0 { 1 } else { 2 }),
+                    target_uin: Some(at.qq),
+                    flag: Some(0),
+                    busi_type: Some(0),
+                    target_uid: Some(uid),
+                })
+            } else {
+                None
+            };
+            let attr6 = if enable_nt_at {
+                None
+            } else {
+                let mut w = Vec::new();
+                w.put_u16(1);
+                w.put_u16(0);
+                w.put_u16(nick.len() as u16 + 1);
+                w.put_u8(if at.qq == 0 { 1 } else { 0 });
+                w.put_u32(at.qq as u32);
+                w.put_u16(0);
+                Some(w)
+            };
+
             Elem {
                 aio_elem: Some(elem::AioElem::Text(
                     Text {
                         text: format!("@{}", nick),
-                        reversed: Some(TextReversed {
-                            r#type: Some(if at.qq == 0 { 1 } else { 0 }),
-                            target_uin: Some(at.qq),
-                            flag: Some(0),
-                            busi_type: Some(0),
-                            target_uid: Some(uid),
-                        }),
+                        attr_6: attr6,
+                        reversed,
                         ..Default::default()
                     }
                 ))

@@ -20,6 +20,7 @@ pub(super) async fn start(bot: Arc<Bot>, host: String, port: u16) -> Result<(), 
             .configure(set_qq_profile::register)
             .configure(send_like::register)
             .configure(send_private_msg::register)
+            .configure(send_group_msg::register)
     })
         .bind((host, port))?
         .run()

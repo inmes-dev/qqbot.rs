@@ -121,13 +121,13 @@ impl QSecurity for QSecurityViaHTTP {
         }))
     }
 
-    fn sign<'a>(&'a self, uin: String, cmd: String, buffer: Arc<Vec<u8>>, seq: u32) -> Pin<Box<dyn Future<Output=QSecurityResult> + Send + 'a>> {
+    fn sign<'a>(&'a self, uin: String, cmd: String, ori_buffer: Arc<Vec<u8>>, seq: u32) -> Pin<Box<dyn Future<Output=QSecurityResult> + Send + 'a>> {
         Pin::from(Box::new(async move {
             let start = std::time::Instant::now();
-            let buffer = hex::encode(buffer.as_slice());
+            let buffer = hex::encode(ori_buffer.as_slice());
             let params = [
-                ("uin", uin),
-                ("cmd", cmd),
+                ("uin", uin.clone()),
+                ("cmd", cmd.clone()),
                 ("seq", seq.to_string()),
                 ("buffer", buffer)
             ];
@@ -142,8 +142,8 @@ impl QSecurity for QSecurityViaHTTP {
             let response: serde_json::Value = match serde_json::from_str(&response) {
                 Ok(v) => v,
                 Err(e) => {
-                    log::error!("Failed to parse sign response: {}, err: {}", response, e);
-                    return QSecurityResult::new_empty();
+                    log::error!("Failed to parse sign, err: {}", e);
+                    return Box::pin(self.sign(uin, cmd, ori_buffer, seq)).await;
                 }
             };
             let ret = response["retcode"].as_u64().unwrap_or(1);
