@@ -1,3 +1,4 @@
+use std::fmt::format;
 use std::sync::Arc;
 use anyhow::{anyhow, Error};
 use bytes::BufMut;
@@ -7,6 +8,7 @@ use ntrim_tools::cqp::CQCode;
 use crate::bot::Bot;
 use crate::Contact;
 use crate::pb::msg::{ * };
+use crate::pb::msg::common_elem::{CommonBigFaceElem, CommonFaceElem};
 use crate::pb::msg::text::TextReversed;
 
 pub(crate) async fn convert_cq_to_msg(bot: &Arc<Bot>, contact: &Contact, cqs: Vec<CQCode>) -> RichText {
@@ -84,7 +86,7 @@ async fn convert_cq_to_elem(bot: &Arc<Bot>, contact: &Contact, cq: CQCode) -> Re
                     flag: Some(0),
                     busi_type: Some(0),
                     target_uid: Some(uid),
-                })
+                }.encode_to_vec())
             } else {
                 None
             };
@@ -110,6 +112,49 @@ async fn convert_cq_to_elem(bot: &Arc<Bot>, contact: &Contact, cq: CQCode) -> Re
                         ..Default::default()
                     }
                 ))
+            }
+        }
+        CQCode::Face(face) => {
+            let elem = if face.big {
+                elem::AioElem::CommonElem(
+                    CommonElem {
+                        service_type: 37,
+                        data: CommonBigFaceElem {
+                            pack_id: Some("1".to_string()),
+                            stick_id: Some("1".to_string()),
+                            face_id: face.id,
+                            flag4: Some(1),
+                            flag5: Some(1),
+                            flag9: Some(1),
+                            face_name: Some(format!("/{}", face.id)),
+                            result: Some("".to_string()),
+                            ..Default::default()
+                        }.encode_to_vec(),
+                        business_type: Some(1)
+                    }
+                )
+            } else if face.id >= 260 {
+                elem::AioElem::CommonElem(
+                    CommonElem {
+                        service_type: 33,
+                        data: CommonFaceElem {
+                            face_id: face.id,
+                            face_desc: Some(format!("/{}", face.id)),
+                            face_name: Some(format!("/{}", face.id)),
+                            ..Default::default()
+                        }.encode_to_vec(),
+                        business_type: Some(1)
+                    }
+                )
+            } else {
+                elem::AioElem::Face(
+                    Face {
+                        face_id: face.id
+                    }
+                )
+            };
+            Elem {
+                aio_elem: Some(elem)
             }
         }
         _ => return Err(anyhow!("Unsupported CQCode: {}", cq.to_string()))

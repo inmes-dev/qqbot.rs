@@ -86,7 +86,7 @@ message ElemFlags2 {
 message Text {
   required string text = 1;
   optional bytes attr_6 = 3;
-  optional TextReversed reversed = 12;
+  optional bytes reversed = 12;
 
   message TextReversed {
     optional uint32 type = 1; // 1 all 2 specific
@@ -113,7 +113,13 @@ message CommonElem {
   }
 
   message CommonBigFaceElem {
+    optional string pack_id = 1;
+    optional string stick_id = 2;
     required uint32 face_id = 3;
+    optional uint32 flag4 = 4;
+    optional uint32 flag5 = 5;
+    optional string result = 6;
     optional string face_name = 7;
+    optional uint32 flag9 = 9;
   }
 }

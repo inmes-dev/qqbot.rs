@@ -1,7 +1,7 @@
 use std::fmt::format;
 use std::sync::Arc;
 use bytes::{Buf, Bytes};
-use log::warn;
+use log::{error, warn};
 use prost::Message;
 use ntrim_tools::cqp::{At, Face, Image, Reply};
 pub use ntrim_tools::cqp::CQCode;
@@ -120,18 +120,18 @@ pub(crate) async fn parse_elements(bot: &Arc<Bot>, record: &mut MessageRecord, e
             AioElem::CommonElem(CommonElem{ service_type, data, business_type }) => {
                 let data = Bytes::from(data);
                 if service_type == 3 { // 闪照
-
-                } else if service_type == 33 { // 那种表情消息，扩展出来的
+                    error!("Unsupported service_type: 3")
+                } else if service_type == 33 { // 表情消息，扩展出来的
                     let comm_face = CommonFaceElem::decode(data).unwrap();
                     result.push(CQCode::Face(Face::new(
                         comm_face.face_id
                     )))
-                } else if service_type == 37 { // 那种大的表情消息
+                } else if service_type == 37 { // 大的表情消息
                     single_element = true;
                     result.clear();
                     let big_face = CommonBigFaceElem::decode(data).unwrap();
                     result.push(CQCode::Face(Face::new_big_face(
-                        big_face.face_id
+                        big_face.face_id, big_face.result.map_or(0, |v| v.parse().unwrap_or(0))
                     )))
                 } else if service_type == 48 { // 新版本专属的图片推送
                     let msg_info = MsgInfo::decode(data).unwrap();
