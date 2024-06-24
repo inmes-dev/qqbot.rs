@@ -1,4 +1,4 @@
-use prost::{Message};
+use prost::Message as _;
 use ntrim_macros::command;
 use crate::{oidb_request, oidb_response};
 use crate::pb::trpc::rich_media_ntv2::{ * };
@@ -26,6 +26,7 @@ impl RequestDownloadRKeyCodec {
                     agent_type: 2,
                 },
             },
+            upload: None,
             download: Some(DownloadRkeyReq {
                 types: vec![10, 20],
                 download_type: Some(2),

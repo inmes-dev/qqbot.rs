@@ -5,10 +5,10 @@ members = [
 resolver = "2"
 
 [workspace.package]
-rust-version = "1.76"
+rust-version = "1.79"
 edition = "2021"
 
-license = "Apache-2.0, MIT"
+license = "GPL-3"
 homepage = "https://github.com/inmes-dev/ntrnm"
 repository = "https://github.com/inmes-dev/ntrnm"
 

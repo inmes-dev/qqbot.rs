@@ -1,5 +1,6 @@
 use std::sync::{Arc, OnceLock};
 use bytes::{BufMut, BytesMut};
+use chrono::Local;
 use log::{*};
 use prost::Message;
 use tokio::sync::mpsc::Receiver;
@@ -176,7 +177,7 @@ fn generate_qqsecurity_head(
     qq_sec.message_type = 34;
 
     // 获取当前时间戳
-    let timestamp = chrono::Local::now().timestamp().to_string();
+    let timestamp = Local::now().timestamp().to_string();
     let entry = SsoMapEntry {
         key: "client_conn_seq".to_string(),
         value: timestamp.into_bytes(),

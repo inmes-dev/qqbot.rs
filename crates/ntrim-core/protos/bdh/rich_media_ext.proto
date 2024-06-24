@@ -1,0 +1,39 @@
+syntax = "proto3";
+
+package bdh;
+
+import "msg/ntv2_rich_media.proto";
+
+message RichMediaExt {
+  string file_uuid = 1;
+  string up_key = 2;
+  uint32 original = 3;
+  Opt opt = 4;
+  Network network = 5;
+  repeated msg.MsgInfoBody msg_info_body = 6;
+  uint32 block_size = 10;
+  NTHighwayHash nt_highway_hash = 11;
+}
+
+message NTHighwayHash {
+  repeated bytes sha1 = 1;
+}
+
+message Opt {
+  uint32 switch_1 = 1;
+  uint32 switch_4 = 4;
+}
+
+message Network {
+  repeated Ipv4 addrs_v4 = 1;
+}
+
+message Ipv4 {
+  Ip ip = 1;
+  uint32 port = 2;
+}
+
+message Ip {
+  uint32 enable = 1;
+  string ip = 2;
+}

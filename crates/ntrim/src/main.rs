@@ -146,6 +146,7 @@ async fn main() {
     } else {
         error!("No backend selected, please enable one of the backend features")
     }
+
     loop {
         tokio::time::sleep(std::time::Duration::from_secs(1)).await;
     }

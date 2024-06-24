@@ -1,0 +1,25 @@
+syntax = "proto2";
+
+package trpc.http_conn;
+
+message HttpConn0xff_501_Response {
+  required HttpConn0xff_501_ResponseBody body = 1281;
+}
+
+message HttpConn0xff_501_ResponseBody {
+  required bytes session_ticket = 1;
+  required string session_ticket_key = 2;
+  repeated ServerInfo servers = 3;
+}
+
+message ServerInfo {
+  required uint32 server_type = 1;
+  repeated ServerAddr server_addr = 2;
+}
+
+message ServerAddr {
+  optional uint32 ip_type = 1;
+  required fixed32 ip = 2;
+  required uint32 port = 3;
+  optional uint32 area = 4;
+}

@@ -4,8 +4,9 @@ pub mod record;
 
 use std::sync::Arc;
 use chrono::{Local, NaiveDateTime};
-use log::warn;
+use log::{info, warn};
 use prost::Message as ProstMessage;
+use ntrim_tools::cqp::CQCode;
 use crate::bot::Bot;
 use crate::pb::msg::{Grp, olpush_routing_head};
 use crate::pb::trpc::olpush::Message;
@@ -59,30 +60,10 @@ pub(super) async fn on_group_msg(bot: Arc<Bot>, msg: Message) {
 
     decoder::parse_elements(&bot, &mut record, rich_text.elems).await;
 
-    /*let raw_msg = record.elements.iter().map(|x| x.to_string()).collect::<Vec<String>>().join("");
-    if raw_msg == "ping" {
-        let friend = crate::pb::msg::send_msg_req::RoutingHead {
-            c2c: None,
-            grp: Some(Grp {
-                group_id,
-                ..Default::default()
-            }),
-        };
-        Bot::send_msg(&bot, friend, crate::pb::msg::RichText {
-            attr: None,
-            elems: vec![
-
-                crate::pb::msg::Elem {
-                    aio_elem: Some(crate::pb::msg::elem::AioElem::Text(
-                        crate::pb::msg::Text {
-                            text: format!("pong, receive_time: {}, time: {}", msg_time, Local::now().timestamp()).to_string(),
-                            ..Default::default()
-                        }
-                    ))
-                },
-            ]
-        }).await;
-    }*/
+    if std::env::var("PING_PONG").unwrap_or("1".to_string()) == "1" && record.to_raw_msg() == "ping" {
+        let result = Bot::send_msg(&bot, record.contact.clone(), vec![CQCode::Text("qqbot.rs -> pong".to_string())]).await;
+        info!("Ping pong result: {:?}", result);
+    }
 
     println!("{}", record);
 }

@@ -25,7 +25,8 @@ pub mod protocol {
         QQ_9_0_20.get_or_init(|| {
             Protocol {
                 // sub_app_id: 0x20051ed6, // pad
-                sub_app_id: 0x20051ea4, // phone
+                //sub_app_id: 0x20051ea4, // phone
+                sub_app_id: 537206486, // phone
                 //sub_app_id: 0x20051bad, // pad
                 detail: "||A9.0.20.38faf5bf".to_string(),
                 nt_build_version: "15515".to_string(),

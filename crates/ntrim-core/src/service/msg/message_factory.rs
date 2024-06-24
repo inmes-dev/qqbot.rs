@@ -157,9 +157,28 @@ async fn convert_cq_to_elem(bot: &Arc<Bot>, contact: &Contact, cq: CQCode) -> Re
                 aio_elem: Some(elem)
             }
         }
+        CQCode::Image(ref image) => {
+            // linux: /mnt/1234567890.jpg
+            // linux: ../1234567890.jpg !dangerous!
+            // windows: C:\Users\1234567890.jpg
+            let elem = if std::path::Path::new(&image.file).exists() {
+                let msg_info = Bot::upload_group_pic(bot, 645830205, image.file.clone(), true).await?;
+                elem::AioElem::CommonElem(
+                    CommonElem {
+                        service_type: 48,
+                        data: msg_info.encode_to_vec(),
+                        business_type: Some(20)
+                    }
+                )
+            } else {
+                return Err(anyhow!("Unsupported Image CQCode: {}", cq.to_string()))
+            };
+            Elem {
+                aio_elem: Some(elem)
+            }
+        }
         _ => return Err(anyhow!("Unsupported CQCode: {}", cq.to_string()))
 /*
-        CQCode::Face(_) => {}
         CQCode::Image(_) => {}
         CQCode::BubbleFace(_) => {}
         CQCode::Reply(_) => {}

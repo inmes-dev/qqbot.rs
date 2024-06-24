@@ -15,10 +15,10 @@ message ExtBizInfo {
 }
 
 message PttExtBizInfo {
-  required uint64 srcUin = 1;
-  required uint32 pttScene = 2;
-  required uint32 pttType = 3;
-  required uint32 changeVoice = 4;
+  optional uint64 srcUin = 1;
+  optional uint32 pttScene = 2;
+  optional uint32 pttType = 3;
+  optional uint32 changeVoice = 4;
   optional bytes waveform = 5;
   optional uint32 autoConvertText = 6;
   optional bytes bytesReserve = 11;
@@ -40,6 +40,27 @@ message PicExtBizInfo {
   optional uint32 fromScene = 1001;
   optional uint32 toScene = 1002;
   optional uint32 oldFileId = 1003;
+
+  message PicExtReserveTroop {
+    required uint32 u1 = 1;
+    required uint32 u3 = 3;
+    required uint32 u4 = 4;
+    required bytes u9 = 9;
+    required uint32 u10 = 10;
+    required bytes u12 = 12;
+    required bytes u18 = 18;
+    required bytes u19 = 19;
+    required PicExtReserveTroopReserve u21 = 21;
+    required string md5 = 31;
+    message PicExtReserveTroopReserve {
+      required uint32 u1 = 1;
+      required bytes u2 = 2;
+      required uint32 u3 = 3;
+      required uint32 u4 = 4;
+      required uint32 u5 = 5;
+      required bytes u7 = 7;
+    }
+  }
 }
 
 message MsgInfoBody {

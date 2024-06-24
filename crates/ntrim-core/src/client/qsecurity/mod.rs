@@ -133,7 +133,8 @@ static WHITELIST_COMMANDS: [&str; 102] = [
     "QQConnectLogin.auth",
     "ConnAuthSvr.get_auth_api_list_emp",
     "QQConnectLogin.auth_emp",
-    "ConnAuthSvr.get_auth_api_list"
+    "ConnAuthSvr.get_auth_api_list",
+    //"OidbSvcTrpcTcp.0x11c4_100",
 ];
 
 pub trait QSecurity: Send + Sync {

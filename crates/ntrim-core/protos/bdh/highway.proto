@@ -1,0 +1,47 @@
+syntax = "proto2";
+
+package bdh;
+
+message DataHighwayHead {
+  required uint32 ver = 1;
+  required string uin = 2;
+  required string cmd = 3;
+  required uint32 seq = 4;
+  required uint32 retry_tomes = 5;
+  required uint32 sub_app_id = 6;
+  required uint32 data_flag = 7;
+  required uint32 cmd_id = 8;
+}
+
+message DataHighwaySegHead {
+  required uint32 service_id = 1;
+  required uint64 file_size = 2;
+  required uint32 offset = 3;
+  required uint32 block_size = 4;
+  //uint32 ret_code = 5;
+  optional bytes service_ticket = 6;
+  //uint32 flag = 7;
+  optional bytes block_md5 = 8;
+  optional bytes file_md5 = 9;
+  required uint32 cache_ip = 10;
+  required uint32 cache_port = 13;
+}
+
+message ReqDataHighwayHead {
+  required DataHighwayHead head = 1;
+  required DataHighwaySegHead seg_head = 2;
+  optional bytes ext = 3;
+  optional uint32 flag = 4;
+  optional LoginSigHead login_sig_head = 5;
+}
+
+message LoginSigHead {
+  required uint32 sig_type = 1;
+  required bytes sig = 2;
+}
+
+message RespDataHighway {
+  required DataHighwayHead head = 1;
+  required DataHighwaySegHead seg_head = 2;
+  required int32 err_code = 3;
+}

@@ -2,8 +2,11 @@
 # 签名服务器地址
 # 默认的签名地址延迟有点高
 # 如果需求低延迟，请使用香港或其它区域的服务器代理转发即可...
-# kritor.support提供了全球节点，其中包括香港节点，可能您的dns不会为您解析到香港节点，请手动修改hosts
+# kritor.support采用CloudFlare代理
 server = "https://kritor.support/android/v9.0.20"
+
+# 子服务器 可能不稳定/更快
+# server = "http://cdn.kritor.support/android/v9.0.20"
 
 [developer]
 

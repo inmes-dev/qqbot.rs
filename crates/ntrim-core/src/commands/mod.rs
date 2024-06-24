@@ -29,7 +29,7 @@ macro_rules! oidb_request {
             cmd: $cmd,
             service: $service,
             body: $buffer,
-            nt_flag: Some(12),
+            nt_flag: Some(1),
         }.encode_to_vec())
     };
 }
@@ -38,24 +38,27 @@ macro_rules! oidb_request {
 macro_rules! oidb_response {
     ($cmd:expr, $service:expr, $buffer:expr) => {
         {
-        let data = match crate::pb::oidb::TrpcOidbResponse::decode($buffer) {
-            Ok(data) => Some(data),
-            Err(e) => {
-                log::info!("Failed to decode TrpcOidbResponse: {:?}", e);
-                None
-            }
-        };
-        if let Some(rsp) = data {
-            if rsp.cmd != $cmd || rsp.service != $service {
-                log::info!("Invalid TrpcOidbResponse: {:?}", rsp);
-                None
+            let data = match crate::pb::oidb::TrpcOidbResponse::decode($buffer) {
+                Ok(data) => Some(data),
+                Err(e) => {
+                    log::warn!("Failed to decode TrpcOidbResponse: {:?}", e);
+                    None
+                }
+            };
+            if let Some(rsp) = data {
+                if rsp.cmd != $cmd || rsp.service != $service {
+                    log::warn!("Invalid TrpcOidbResponse: {:?}", rsp);
+                    None
+                } else if(rsp.result != 0) {
+                    log::warn!("TrpcOidbResponse failed: {:?}", rsp);
+                    None
+                } else {
+                    Some(rsp.body)
+                }
             } else {
-                Some(rsp.body)
+                log::warn!("Invalid TrpcOidbResponse: {:?}", $buffer);
+                None
             }
-        } else {
-            log::info!("Invalid TrpcOidbResponse: {:?}", $buffer);
-            None
-        }
         }
     };
 }

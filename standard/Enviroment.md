@@ -24,6 +24,8 @@ IS_NT_IPV6=1 ./ntrim
 | SQL_MAX_CONNECTIONS  | 数据库最大连接数                   | 5                |
 | ENABLE_SIGN_PROXY    | 是否允许签名请求自动走代理              | 0                |
 | IMM_REFRESH_CACHE    | 是否上线成功立即刷新群列表/群成员列表/好友列表缓存 | 1                |
+| PING_PONG            | 自回复测试                      | 1                |
+| BDH_CHUNK_SIZE       | 资源上传分片大小                   | 1024 * 1024      |
 
 ### HEARTBEAT_INTERVAL
 

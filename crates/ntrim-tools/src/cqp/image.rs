@@ -43,10 +43,14 @@ impl Display for Image {
 
 impl Image {
     pub(crate) fn from(params: &HashMap<String, String>) -> Result<Self, Error> {
-        let file = params.get("file").ok_or(anyhow!("Image 缺少 'file' 参数"))?;
-        let url = params.get("url").ok_or(anyhow!("Image 缺少 'url' 参数"))?;
-        let r#type = params.get("type").ok_or(anyhow!("Image 缺少 'type' 参数"))?;
+        let binding = "".to_string();
+        let file = params.get("file").unwrap_or(&binding);
+        let url = params.get("url").unwrap_or(&binding);
+        let r#type = params.get("type").unwrap_or(&binding);
         let sub_type = params.get("subType").map(|s| s.parse::<u32>().unwrap_or(0)).unwrap_or(0);
+        if file.is_empty() && url.is_empty() {
+            return Err(anyhow!("file and url can't be empty"))
+        }
         Ok(Image {
             file: file.to_string(),
             url: url.to_string(),

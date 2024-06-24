@@ -2,11 +2,52 @@ syntax = "proto2";
 
 // https://github.com/whitechi73/OpenShamrock/blob/59d762eecf6627bd5480cd308e2f6171118a3bc0/protobuf/src/main/java/protobuf/oidb/cmd0x11c5/NtV2RichMediaReq.kt#L11
 package trpc.rich_media_ntv2;
+
+import "msg/ntv2_rich_media.proto";
+
+// OidbSvcTrpcTcp.0x9067_100
 // OidbSvcTrpcTcp.0x9067_202
 
 message NtV2RichMediaReq {
   required MultiMediaReqHead head = 1;
+  optional UploadReq upload = 2;
   optional DownloadRkeyReq download = 4;
+
+}
+
+message UploadReq {
+  repeated UploadInfo uploadInfo = 1;
+  optional bool tryFastUploadCompleted = 2;
+  optional bool srvSendMsg = 3;
+  optional uint32 clientRandomId = 4 [default = 0];
+  optional uint32 compatQMsgSceneType = 5;
+  optional msg.ExtBizInfo extBizInfo = 6;
+  optional uint32 clientSeq = 7;
+  optional bool noNeedCompatMsg = 8;
+}
+
+message UploadInfo {
+  required FileInfo fileInfo = 1;
+  required uint32 subFileType = 2;
+}
+
+message FileInfo {
+  optional uint64 fileSize = 1;
+  optional string md5 = 2;
+  optional string sha1 = 3;
+  optional string name = 4;
+  optional FileType fileType = 5;
+  optional uint32 width = 6;
+  optional uint32 height = 7;
+  optional uint32 time = 8;
+  optional uint32 original = 9;
+}
+
+message FileType {
+  optional uint32 fileType = 1 [default = 0];
+  optional uint32 picFormat = 2 [default = 0];
+  optional uint32 videoFormat = 3;
+  optional uint32 voiceFormat = 4;
 }
 
 message DownloadRkeyReq {
@@ -48,19 +89,19 @@ message C2CUserInfo {
 }
 
 message GroupUserInfo {
-  required uint64 uin = 1;
+  required uint32 uin = 1;
 }
 
 message ChannelUserInfo {
-  required uint64 guildId = 1;
-  required uint64 channelId = 2;
+  required uint32 guildId = 1;
+  required uint32 channelId = 2;
   required uint32 channelType = 3;
 }
 
 // https://github.com/whitechi73/OpenShamrock/blob/59d762e/protobuf/src/main/java/protobuf/oidb/cmd0x11c5/NtV2RichMediaRsp.kt
 message NtV2RichMediaRsp {
   required RspHead head = 1;
-  //optional UploadRsp upload = 2;
+  optional UploadRsp upload = 2;
   //optional DownloadRsp download = 3;
   optional DownloadRkeyRsp downloadRkeyRsp = 4;
   //optional DeleteRsp delete = 5;
@@ -87,6 +128,48 @@ message RKeyInfo {
   optional uint32 storeId = 3;
   optional uint32 rkeyCreateTime = 4;
   optional uint32 type = 5;
+}
+
+message UploadRsp {
+  optional string ukey = 1;
+  optional uint64 ukeyTtlSec = 2;
+  repeated Ipv4 ipv4 = 3;
+  repeated Ipv6 ipv6 = 4;
+  optional uint64 msgSeq = 5;
+  optional msg.MsgInfo msgInfo = 6;
+  repeated RichmediaStorageTransInfo ext = 7;
+  optional bytes compatQMsg = 8;
+  repeated SubFileInfo subFileInfos = 10;
+}
+
+message Ipv4 {
+  optional int32 outIp = 1;
+  optional int32 outPort = 2;
+  optional uint32 inIp = 3;
+  optional int32 inPort = 4;
+  optional int32 ipType = 5;
+}
+
+message Ipv6 {
+  optional bytes outIp = 1;
+  optional int32 outPort = 2;
+  optional bytes inIp = 3;
+  optional int32 inPort = 4;
+  optional int32 ipType = 5;
+}
+
+message SubFileInfo {
+  optional uint32 subType = 1;
+  optional string ukey = 2;
+  optional uint64 ukeyTTLSec = 3;
+  repeated Ipv4 ipv4 = 4;
+  repeated Ipv6 ipv6 = 5;
+}
+
+message RichmediaStorageTransInfo {
+  optional uint32 subType = 1;
+  optional uint32 extType = 2;
+  optional bytes extValue = 3;
 }
 
 

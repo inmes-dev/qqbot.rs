@@ -6,7 +6,6 @@ use ntrim_macros::command;
 use crate::{oidb_request, oidb_response};
 use prost::{DecodeError, Message};
 use serde::Serialize;
-use time::macros::date;
 
 pub struct GetProfileDetailCodec;
 

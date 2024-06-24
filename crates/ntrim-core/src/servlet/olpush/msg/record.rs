@@ -1,6 +1,7 @@
 use std::fmt::Display;
 use ntrim_tools::cqp::CQCode;
 
+#[derive(Debug, Clone)]
 pub enum Contact {
     //        name   uin   uid
     Group(   String, i64),
@@ -27,7 +28,13 @@ impl Display for MessageRecord {
             Contact::Friend(user_name, uin, _) => ("好友", user_name, uin),
             Contact::Stranger(user_name, uin, _) => ("陌生人", user_name, uin),
         };
-        let raw_msg = self.elements.iter().map(|x| x.to_string()).collect::<Vec<String>>().join("");
+        let raw_msg = self.to_raw_msg();
         write!(f, "{}消息 [{}({})] {}({}): {}", contact.0, contact.1, contact.2, self.sender_nick, self.sender_uid, raw_msg)
+    }
+}
+
+impl MessageRecord {
+    pub fn to_raw_msg(&self) -> String {
+        self.elements.iter().map(|x| x.to_string()).collect::<Vec<String>>().join("")
     }
 }

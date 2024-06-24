@@ -3,3 +3,4 @@ pub mod friend;
 pub mod msg;
 pub mod heartbeat;
 mod troop;
+mod bdh;
