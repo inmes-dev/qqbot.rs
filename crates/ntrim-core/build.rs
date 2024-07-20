@@ -14,6 +14,10 @@ fn main() {
     check_protoc();
 
     let mut config = Config::new();
+
+    // 创建src/src，如果不存在，修复编译错误
+    std::fs::create_dir_all("src/pb").unwrap();
+
     config
         .out_dir("src/pb")
         .include_file("mod.rs");
@@ -82,6 +86,7 @@ fn try_install_protoc() {
         "x86_64-unknown-linux-gnu" => PROTOC_URL_LINUX_X64,
         "i686-unknown-linux-gnu" => PROTOC_URL_LINUX_X32,
         "x86_64-apple-darwin" => PROTOC_URL_OSX,
+        "aarch64-apple-darwin" => PROTOC_URL_OSX,
         _ => {
             println!("Unsupported target: {}", target);
             exit(1);
